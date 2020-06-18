@@ -2,7 +2,7 @@
   <div>
     <div v-if="searchable && searchPlace === 'top'" class="search-con search-con-top">
       <Select v-model="searchKey" class="search-col">
-        <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option>
+        <!-- <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option> -->
       </Select>
       <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button @click="handleSearch" class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
@@ -40,7 +40,7 @@
     </Table>
     <div v-if="searchable && searchPlace === 'bottom'" class="search-con search-con-top">
       <Select v-model="searchKey" class="search-col">
-        <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option>
+        <!-- <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option> -->
       </Select>
       <Input placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
@@ -151,6 +151,9 @@ export default {
       searchKey: ''
     }
   },
+  created () {
+    console.log('table')
+  },
   methods: {
     suportEdit (item, index) {
       item.render = (h, params) => {
@@ -176,7 +179,7 @@ export default {
             'on-save-edit': (params) => {
               this.value[params.row.initRowIndex][params.column.key] = this.edittingText
               this.$emit('input', this.value)
-              this.$emit('on-save-edit', Object.assign(params, {value: this.edittingText}))
+              this.$emit('on-save-edit', Object.assign(params, { value: this.edittingText }))
               this.edittingCellId = ''
             }
           }

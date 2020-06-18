@@ -1,5 +1,5 @@
 import Main from '@/components/main'
-import parentView from '@/components/parent-view'
+// import parentView from '@/components/parent-view'
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -50,62 +50,72 @@ export default [
     ]
   },
   {
-    path: '',
-    name: 'doc',
+    path: '/userManage',
+    name: 'userManage',
     meta: {
-      title: '文档',
-      href: 'https://lison16.github.io/iview-admin-doc/#/',
-      icon: 'ios-book'
-    }
-  },
-  {
-    path: '/multilevel',
-    name: 'multilevel',
-    meta: {
-      icon: 'md-menu',
-      title: '多级菜单'
+      icon: 'md-person', // 出现在面包屑
+      title: '用户管理' // 不写此处代码，面包屑菜单名为 userManage
     },
     component: Main,
     children: [
       {
-        path: 'level_2_1',
-        name: 'level_2_1',
+        path: 'userList',
+        name: 'userList',
         meta: {
-          icon: 'md-funnel',
-          title: '二级-1'
+          icon: 'md-person',
+          title: '用户管理'
         },
-        component: () => import('@/view/multilevel/level-2-1.vue')
+        component: () => import('@/view/userManage/userList.vue')
       },
       {
-        path: 'level_2_2',
-        name: 'level_2_2',
+        path: 'userEdit',
+        name: 'userEdit',
         meta: {
-          access: ['super_admin'],
-          icon: 'md-funnel',
-          showAlways: true,
-          title: '二级-2'
+          hideInMenu: true,
+          icon: 'md-person',
+          title: '编辑'
         },
-        component: parentView,
-        children: [
-          {
-            path: 'level_2_2_1',
-            name: 'level_2_2_1',
-            meta: {
-              icon: 'md-funnel',
-              title: '三级'
-            },
-            component: () => import('@/view/multilevel/level-2-2/level-3-1.vue')
-          }
-        ]
-      },
+        component: () => import('@/view/userManage/userEdit.vue')
+      }
+    ]
+  },
+  {
+    path: '/subjectManage',
+    name: 'subjectManage',
+    meta: {
+      icon: 'ios-paper',
+      title: '题库管理'
+    },
+    component: Main,
+    children: [
       {
-        path: 'level_2_3',
-        name: 'level_2_3',
+        path: 'subjectList',
+        name: 'subjectList',
         meta: {
-          icon: 'md-funnel',
-          title: '二级-3'
+          icon: 'ios-paper',
+          title: '题库管理'
         },
-        component: () => import('@/view/multilevel/level-2-3.vue')
+        component: () => import('@/view/subjectManage/subjectList.vue')
+      }
+    ]
+  },
+  {
+    path: '/testPaperManage',
+    name: 'testPaperManage',
+    meta: {
+      icon: 'md-card',
+      title: '试卷管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'testPaperList',
+        name: 'testPaperList',
+        meta: {
+          icon: 'md-card',
+          title: '试卷管理'
+        },
+        component: () => import('@/view/testPaperManage/testPaperList.vue')
       }
     ]
   },
