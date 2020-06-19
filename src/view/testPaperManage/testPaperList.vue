@@ -11,60 +11,40 @@ export default {
     return {
       dataList: [{
         'id': '0',
-        'name': '小米',
+        'name': '1.高一上学期模拟考试试题1',
         'status': '正常',
-        'sex': '女',
-        'grade': '初二',
-        'type': '学生',
-        'date': '2020-01-01',
-        'mobile': '13824125333'
+        'totalNum': '100',
+        'questionNum': '100'
       },
       {
         'id': '1',
-        'name': '小明',
+        'name': '初一下学期模拟考试试题',
         'status': '停用',
-        'sex': '男',
-        'grade': '高一',
-        'type': '学生',
-        'date': '2020-01-12',
-        'mobile': '13824125565'
+        'totalNum': '100',
+        'questionNum': '80'
       }
       ],
       columns: [
         {
           title: '序号',
           type: 'index',
+          key: 'index',
           width: 60,
           align: 'center'
         },
         {
-          title: '用户名称',
+          title: '试卷名称',
           key: 'name',
           align: 'center'
         },
         {
-          title: '类型',
-          key: 'type',
+          title: '总分',
+          key: 'totalNum',
           align: 'center'
         },
         {
-          title: '注册时间',
-          key: 'date',
-          align: 'center'
-        },
-        {
-          title: '年级',
-          key: 'grade',
-          align: 'center'
-        },
-        {
-          title: '手机号',
-          key: 'mobile',
-          align: 'center'
-        },
-        {
-          title: '性别',
-          key: 'sex',
+          title: '题数',
+          key: 'questionNum',
           align: 'center'
         },
         {
@@ -89,7 +69,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.$router.push({ path: '../userManage/userEdit?id=' + this.dataList[params.index].id })
+                      this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
                     }
                   }
                 }, '编辑'),

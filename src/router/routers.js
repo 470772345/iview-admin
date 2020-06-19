@@ -116,6 +116,16 @@ export default [
           title: '试卷管理'
         },
         component: () => import('@/view/testPaperManage/testPaperList.vue')
+      },
+      {
+        path: 'testPaperEdit',
+        name: 'testPaperEdit',
+        meta: {
+          hideInMenu: true,
+          icon: 'md-person',
+          title: '编辑'
+        },
+        component: () => import('@/view/testPaperManage/testPaperEdit.vue')
       }
     ]
   },

@@ -1,10 +1,12 @@
 <template>
-  <div>
-      <i-table border :content="self" :columns="columns" :data="dataList"></i-table>
+  <div class="user-list">
+   <myTable :searchable='true' :columns='columns' :value='dataList' :border='true'></myTable>
   </div>
 </template>
 <script>
+import myTable from '_c/tables'
 export default {
+  name: 'user-list',
   data () {
     return {
       dataList: [{
@@ -12,24 +14,27 @@ export default {
         'name': '小米',
         'status': '正常',
         'sex': '女',
+        'age': '14',
         'grade': '初二',
         'type': '学生',
-        'date': '2020-01-01'
+        'mobile': '13824125333'
       },
       {
         'id': '1',
         'name': '小明',
         'status': '停用',
+        'age': '15',
         'sex': '男',
         'grade': '高一',
         'type': '学生',
-        'date': '2020-01-12'
+        'mobile': '13824125333'
       }
       ],
       self: this,
       columns: [
         {
           title: '序号',
+          key: 'index',
           type: 'index',
           width: 60,
           align: 'center'
@@ -40,23 +45,23 @@ export default {
           align: 'center'
         },
         {
-          title: '类型',
-          key: 'type',
+          title: '性别',
+          key: 'sex',
           align: 'center'
         },
         {
-          title: '注册时间',
-          key: 'date',
+          title: '年龄',
+          key: 'age',
           align: 'center'
         },
         {
-          title: '班级',
+          title: '年级',
           key: 'grade',
           align: 'center'
         },
         {
-          title: '性别',
-          key: 'sex',
+          title: '手机号',
+          key: 'mobile',
           align: 'center'
         },
         {
@@ -117,6 +122,9 @@ export default {
         }
       ]
     }
+  },
+  components: {
+    myTable
   }
 }
 </script>
