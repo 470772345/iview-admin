@@ -57,50 +57,34 @@ export default {
           key: 'actor',
           align: 'center',
           render: (h, params) => {
-            if (this.dataList[params.index].status === '正常') {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
-                    }
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
                   }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'error',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.popupIsShow = true
-                      this.gcid = this.dataList[params.index].gcid
-                    }
+                }
+              }, '编辑'),
+              h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.popupIsShow = true
+                    this.gcid = this.dataList[params.index].gcid
                   }
-                }, '停用')
-              ])
-            } else {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '../marketing_manage/gift_card_warehouse?gcid=' + this.giftCardsList[params.index].gcid })
-                    }
-                  }
-                }, '启用')
-              ])
-            }
+                }
+              }, '选择试题')
+            ])
           }
         }
       ]

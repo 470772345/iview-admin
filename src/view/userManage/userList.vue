@@ -5,6 +5,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
+import { getTableData } from '@/api/data'
 export default {
   name: 'user-list',
   data () {
@@ -125,6 +126,17 @@ export default {
   },
   components: {
     myTable
+  },
+  methods: {
+    getList () {
+      console.log('getlist')
+      getTableData().then(res => {
+        console.log(res)
+      })
+    }
+  },
+  created () {
+    this.getList()
   }
 }
 </script>
