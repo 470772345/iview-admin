@@ -96,6 +96,16 @@ export default [
           title: '题库管理'
         },
         component: () => import('@/view/subjectManage/subjectList.vue')
+      },
+      {
+        path: 'subjectEdit',
+        name: 'subjectEdit',
+        meta: {
+          hideInMenu: true,
+          icon: 'md-person',
+          title: '题目编辑'
+        },
+        component: () => import('@/view/subjectManage/subjectEdit.vue')
       }
     ]
   },

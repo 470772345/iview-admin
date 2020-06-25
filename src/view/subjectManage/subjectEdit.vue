@@ -1,11 +1,13 @@
 <template>
 <div class="subject-edit">
     <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-        <FormItem label="试卷名称" prop="name">
-            <Input v-model="formValidate.name" placeholder="请输入试卷名称" ></Input>
+        <FormItem label="题目内容" prop="name">
+            <Input v-model="formValidate.name" placeholder="请输入题目内容" ></Input>
         </FormItem>
-        <FormItem label="年龄" prop="age">
-            <Input v-model="formValidate.mail" placeholder="请输入年龄"></Input>
+        <FormItem label="题目选项" prop="age">
+          <div class="anwser-item" v-for="item in list" :key="item.id">
+             <Input v-model="item.answer" placeholder="请输入年龄"></Input>
+          </div>
         </FormItem>
          <FormItem label="年级" prop="grade">
             <Input v-model="formValidate.mail" placeholder="请输入年级"></Input>
@@ -19,9 +21,15 @@
 </template>
 <script>
 export default {
-  name: 'subject-edit',
+  name: 'subject-edit', // 题目编辑页
   data () {
     return {
+      list: [
+        { 'question': '',
+          'answer': '111' },
+        { 'question': '',
+          'answer': '222' }
+      ],
       formValidate: {
         name: '',
         mail: '',
@@ -77,9 +85,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .subject-edit{
   display: flex;
-  justify-content: center
+  justify-content: center;
+  .anwser-item{
+   margin-top: 5rx;
+  }
 }
 </style>

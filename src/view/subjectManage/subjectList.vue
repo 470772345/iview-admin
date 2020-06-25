@@ -117,7 +117,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
+                    this.$router.push({ path: '../subjectManage/subjectEdit?id=' + this.dataList[params.index].id })
                   }
                 }
               }, '编辑')
