@@ -45,7 +45,7 @@
       <Input placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div>
-    <div class="add-btn">
+    <div class="add-btn" v-if="enableAdd">
     <Button class="search-btn" type="primary" style="margin-right:10px"><Icon type="search"/>新增</Button>
     </div>
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
@@ -72,6 +72,10 @@ export default {
       }
     },
     size: String,
+    enableAdd: {
+      type: Boolean,
+      default: true
+    },
     width: {
       type: [Number, String]
     },
