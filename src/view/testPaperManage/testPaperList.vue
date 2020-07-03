@@ -177,19 +177,7 @@ export default {
                     this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
                   }
                 }
-              }, '编辑'),
-              h('Button', {
-                props: {
-                  type: 'success',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.isShowQutList = true
-                    this.gcid = this.dataList[params.index].gcid
-                  }
-                }
-              }, '选择题目')
+              }, '编辑')
             ])
           }
         }
