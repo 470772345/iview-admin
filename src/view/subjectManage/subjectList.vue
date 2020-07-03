@@ -3,7 +3,7 @@
      <Row>
         <Col span="4" class="left-side">
         <div class="c-header" >
-          <div>试题分类</div>
+          <div>题库类别</div>
           <div><Button type='primary' @click="addCategoryClick">新增</Button></div>
           </div>
         <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
@@ -35,17 +35,17 @@ export default {
         {
           cId: '0',
           isSelected: true,
-          name: '数学'
+          name: '题库1'
         },
         {
           cId: '1',
           isSelected: false,
-          name: '历史'
+          name: '题库类别2'
         },
         {
           cId: '2',
           isSelected: false,
-          name: '音乐'
+          name: '题库类别3'
         }],
       dataList: [{
         'id': '0',
@@ -66,16 +66,9 @@ export default {
       ],
       columns: [
         {
-          title: '序号',
-          type: 'index',
-          key: 'index',
-          width: 60,
-          align: 'center'
-        },
-        {
           title: '试题内容',
           key: 'content',
-          width: 360,
+          width: 300,
           align: 'center'
         },
         {

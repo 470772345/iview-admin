@@ -19,6 +19,14 @@
         @on-cancel="cancel">
         <Input placeholder="请输入分类名称" />
     </Modal>
+    <Modal
+        width="60%"
+        v-model="isShowQutList"
+        title="题目列表"
+        @on-ok="QutClick()"
+        @on-cancel="cancel">
+        <myTable :searchable='true' :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
+    </Modal>
   </div>
 </template>
 <script>
@@ -27,6 +35,7 @@ export default {
   name: 'test-paper-list',
   data () {
     return {
+      isShowQutList: false,
       isShowAddCategory: false,
       cList: [
         {
@@ -44,9 +53,42 @@ export default {
           isSelected: false,
           name: '音乐'
         }],
+      qutDataList: [{
+        'id': '0',
+        'content': '中国最大的淡水湖是（）？',
+        'status': '正常',
+        'analysis': '最大的淡水湖是',
+        'subjectType': '单选题',
+        'answer': 'A'
+      },
+      {
+        'id': '1',
+        'content': '下列哪些选项可以提示身体免疫力？',
+        'status': '停用',
+        'analysis': '【解析】打篮球可以锻炼身体',
+        'subjectType': '多选题',
+        'answer': 'AD'
+      },
+      {
+        'id': '0',
+        'content': '中国最大的淡水湖是（）？',
+        'status': '正常',
+        'analysis': '最大的淡水湖是',
+        'subjectType': '单选题',
+        'answer': 'A'
+      },
+      {
+        'id': '1',
+        'content': '下列哪些选项可以提示身体免疫力？',
+        'status': '停用',
+        'analysis': '【解析】打篮球可以锻炼身体',
+        'subjectType': '多选题',
+        'answer': 'AD'
+      }
+      ],
       dataList: [{
         'id': '0',
-        'name': '1.高一上学期模拟考试试题1',
+        'name': '高一上学期模拟考试试题1',
         'status': '正常',
         'totalNum': '100',
         'questionNum': '100'
@@ -58,6 +100,35 @@ export default {
         'totalNum': '100',
         'questionNum': '80'
       }
+      ],
+      qutListCols: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },
+        {
+          title: '试题内容',
+          key: 'content',
+          width: 300,
+          align: 'center'
+        },
+        {
+          title: '解析',
+          key: 'analysis',
+          width: 300,
+          align: 'center'
+        },
+        {
+          title: '标准答案',
+          key: 'answer',
+          align: 'center'
+        },
+        {
+          title: '试题类型',
+          key: 'subjectType',
+          align: 'center'
+        }
       ],
       columns: [
         {
@@ -109,16 +180,16 @@ export default {
               }, '编辑'),
               h('Button', {
                 props: {
-                  type: 'error',
+                  type: 'success',
                   size: 'small'
                 },
                 on: {
                   click: () => {
-                    this.popupIsShow = true
+                    this.isShowQutList = true
                     this.gcid = this.dataList[params.index].gcid
                   }
                 }
-              }, '选择试题')
+              }, '选择题目')
             ])
           }
         }
@@ -129,6 +200,9 @@ export default {
     myTable
   },
   methods: {
+    selectQutClick (selection) {
+      console.log('选择', selection)
+    },
     cancel () {
       this.isShowAddCategory = false
     },

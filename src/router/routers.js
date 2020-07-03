@@ -73,7 +73,7 @@ export default [
         meta: {
           hideInMenu: true,
           icon: 'md-person',
-          title: '编辑'
+          title: '用户编辑'
         },
         component: () => import('@/view/userManage/userEdit.vue')
       }
@@ -133,7 +133,7 @@ export default [
         meta: {
           hideInMenu: true,
           icon: 'md-person',
-          title: '编辑'
+          title: '试卷编辑'
         },
         component: () => import('@/view/testPaperManage/testPaperEdit.vue')
       }
