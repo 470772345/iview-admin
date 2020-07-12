@@ -26,36 +26,37 @@ export default [
     },
     component: () => import('@/view/login/login.vue')
   },
-  {
-    path: '/',
-    name: '_home',
-    redirect: '/home',
-    component: Main,
-    meta: {
-      hideInMenu: true,
-      notCache: true
-    },
-    children: [
-      {
-        path: '/home',
-        name: 'home',
-        meta: {
-          hideInMenu: true,
-          title: '首页',
-          notCache: true,
-          icon: 'md-home'
-        },
-        component: () => import('@/view/single-page/home')
-      }
-    ]
-  },
+  // {
+  //   path: '/',
+  //   name: '_home',
+  //   redirect: '/home',
+  //   component: Main,
+  //   meta: {
+  //     hideInMenu: true,
+  //     notCache: true
+  //   },
+  //   children: [
+  //     {
+  //       path: '/home',
+  //       name: 'home',
+  //       meta: {
+  //         hideInMenu: true,
+  //         title: '首页',
+  //         notCache: true,
+  //         icon: 'md-home'
+  //       },
+  //       component: () => import('@/view/single-page/home')
+  //     }
+  //   ]
+  // },
   {
     path: '/userManage',
     name: 'userManage',
-    meta: {
-      icon: 'md-person', // 出现在面包屑
-      title: '用户管理' // 不写此处代码，面包屑菜单名为 userManage
-    },
+    // redirect: '/userList',
+    // meta: {
+    //   icon: 'md-person', // 出现在面包屑
+    //   title: '用户管理' // 不写此处代码，面包屑菜单名为 userManage
+    // },
     component: Main,
     children: [
       {
