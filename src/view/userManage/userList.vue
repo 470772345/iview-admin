@@ -5,7 +5,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getUserList } from '@/api/data'
+import { getUserList, updateUser, delUser } from '@/api/data'
 export default {
   name: 'user-list',
   data () {
@@ -16,27 +16,7 @@ export default {
         'phone': '',
         'size': 10
       },
-      dataList: [{
-        'id': '0',
-        'name': '小米',
-        'status': '正常',
-        'sex': '女',
-        'age': '14',
-        'grade': '初二',
-        'type': '学生',
-        'mobile': '13824125333'
-      },
-      {
-        'id': '1',
-        'name': '小明',
-        'status': '停用',
-        'age': '15',
-        'sex': '男',
-        'grade': '高一',
-        'type': '学生',
-        'mobile': '13824125333'
-      }
-      ],
+      dataList: [],
       self: this,
       columns: [
         {
@@ -49,7 +29,8 @@ export default {
         {
           title: '用户名称',
           key: 'name',
-          align: 'center'
+          align: 'center',
+          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.name}</a>)
         },
         {
           title: '性别',
@@ -68,7 +49,7 @@ export default {
         },
         {
           title: '手机号',
-          key: 'mobile',
+          key: 'phone',
           align: 'center'
         },
         {
@@ -80,52 +61,7 @@ export default {
           title: '操作',
           key: 'actor',
           align: 'center',
-          render: (h, params) => {
-            if (this.dataList[params.index].status === '正常') {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '../userManage/userEdit?id=' + this.dataList[params.index].id })
-                    }
-                  }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'error',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.popupIsShow = true
-                      this.gcid = this.dataList[params.index].gcid
-                    }
-                  }
-                }, '停用')
-              ])
-            } else {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '../marketing_manage/gift_card_warehouse?gcid=' + this.giftCardsList[params.index].gcid })
-                    }
-                  }
-                }, '启用')
-              ])
-            }
-          }
+          render: (h, params) => this.renderOptions(h, params)
         }
       ]
     }
@@ -145,10 +81,103 @@ export default {
         )
       }
     },
+    edit () {
+      console.log('edit')
+    },
+    delUser (obj) {
+      delUser(obj).then(res => {
+        this.$Message.success('删除成功')
+        this.getList()
+      })
+    },
+    updateStatus (obj, status) {
+      obj.status = status
+      updateUser(obj).then(res => {
+        this.$Message.success('操作成功')
+      })
+    },
     async getList () {
       console.log('getlist')
       const { data } = await getUserList(this.paramsObj)
+      if (data.data && data.data.records) this.dataList = data.data.records
       console.log(data)
+    },
+    renderOptions (h, params) {
+      if (params.row.status === 0) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'success',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 1)
+              }
+            }
+          }, '启用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delUser(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      } else if (params.row.status === 1) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'warning',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 0)
+              }
+            }
+          }, '停用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delUser(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      }
     }
   },
   created () {

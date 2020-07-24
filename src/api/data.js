@@ -8,6 +8,30 @@ export const getUserList = (info) => {
   })
 }
 
+export const addUser = (info) => {
+  return axios.request({
+    url: '/system/tUser/add',
+    data: info,
+    method: 'post'
+  })
+}
+
+export const updateUser = (info) => {
+  return axios.request({
+    url: '/system/tUser/update',
+    data: info,
+    method: 'post'
+  })
+}
+
+export const delUser = (info) => {
+  return axios.request({
+    url: '/system/tUser/delete',
+    data: info,
+    method: 'post'
+  })
+}
+
 export const getTableData = () => {
   return axios.request({
     url: 'get_table_data',

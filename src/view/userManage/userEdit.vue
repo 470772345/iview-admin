@@ -1,22 +1,25 @@
 <template>
 <div class="user-edit">
-    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
         <FormItem label="用户名称" prop="name">
             <Input v-model="formValidate.name" placeholder="请输入用户名称" ></Input>
         </FormItem>
         <FormItem label="年龄" prop="age">
-            <Input v-model="formValidate.mail" placeholder="请输入年龄"></Input>
+            <Input v-model="formValidate.age" placeholder="请输入年龄"></Input>
         </FormItem>
          <FormItem label="年级" prop="grade">
-            <Input v-model="formValidate.mail" placeholder="请输入年级"></Input>
+            <Input v-model="formValidate.grade" placeholder="请输入年级"></Input>
         </FormItem>
-         <FormItem label="手机号" prop="mobile">
-            <Input v-model="formValidate.mail" placeholder="请输入手机号"></Input>
+         <FormItem label="手机号(账号)" prop="phone">
+            <Input v-model="formValidate.phone" placeholder="请输入手机号"></Input>
         </FormItem>
-        <FormItem label="性别" prop="gender">
-            <RadioGroup v-model="formValidate.gender">
-                <Radio label="male">男</Radio>
-                <Radio label="female">女</Radio>
+        <FormItem label="密码" prop="password">
+            <Input type="password" v-model="formValidate.password" placeholder="请输入密码"></Input>
+        </FormItem>
+        <FormItem label="性别" prop="sex">
+            <RadioGroup v-model="formValidate.sex">
+                <Radio label="0">男</Radio>
+                <Radio label="1">女</Radio>
             </RadioGroup>
         </FormItem>
         <FormItem>
@@ -27,19 +30,20 @@
  </div>
 </template>
 <script>
+import * as User from '@/api/data'
 export default {
   name: 'user-edit',
   data () {
     return {
       formValidate: {
+        age: 0,
+        grade: '',
+        integral: 0,
         name: '',
-        mail: '',
-        city: '',
-        gender: '',
-        interest: [],
-        date: '',
-        time: '',
-        desc: ''
+        password: '',
+        phone: '',
+        sex: 0,
+        status: 0
       },
       ruleValidate: {
         name: [
@@ -48,10 +52,10 @@ export default {
         age: [
           { required: true, message: '请输入年龄', trigger: 'blur' }
         ],
-        mobile: [
+        phone: [
           { required: true, message: '请输入手机号码', trigger: 'blur' }
         ],
-        gender: [
+        sex: [
           { required: true, message: '请选择性别', trigger: 'change' }
         ],
         interest: [
@@ -74,8 +78,14 @@ export default {
   methods: {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
+        debugger
         if (valid) {
-          this.$Message.success('提交成功!')
+          User.addUser(this.formValidate).then(res => {
+            if (res.data) {
+              this.$router.go(-1)
+              this.$Message.success('新增成功')
+            }
+          })
         }
       })
     },
