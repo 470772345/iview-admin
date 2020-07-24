@@ -82,6 +82,12 @@ export default {
     handleReset (name) {
       this.$refs[name].resetFields()
     }
+  },
+  created () {
+    console.log(this.$route.params.handleType)
+    if (this.$route.params.handleType !== 'add') {
+    // 编辑接口
+    }
   }
 }
 </script>

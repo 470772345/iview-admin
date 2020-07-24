@@ -46,7 +46,7 @@
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div>
     <div class="add-btn" v-if="enableAdd">
-    <Button class="search-btn" type="primary" style="margin-right:10px"><Icon type="search"/>新增</Button>
+    <Button class="search-btn" type="primary" style="margin-right:10px" @click="addClick('add')"><Icon type="search"/>新增</Button>
     </div>
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
   </div>
@@ -162,6 +162,9 @@ export default {
     console.log('table')
   },
   methods: {
+    addClick (handleType) {
+      this.$emit('addClick', handleType)
+    },
     suportEdit (item, index) {
       item.render = (h, params) => {
         return h(TablesEdit, {

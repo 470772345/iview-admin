@@ -1,5 +1,13 @@
 import axios from '@/libs/api.request'
 
+export const getUserList = (info) => {
+  return axios.request({
+    url: '/system/tUser/list',
+    data: info,
+    method: 'post'
+  })
+}
+
 export const getTableData = () => {
   return axios.request({
     url: 'get_table_data',

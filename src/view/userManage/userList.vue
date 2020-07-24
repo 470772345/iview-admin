@@ -1,15 +1,21 @@
 <template>
   <div class="user-list">
-   <myTable :searchable='true' :columns='columns' :value='dataList' :border='true'></myTable>
+   <myTable :searchable='true' :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
 import myTable from '_c/tables'
-import { getTableData } from '@/api/data'
+import { getUserList } from '@/api/data'
 export default {
   name: 'user-list',
   data () {
     return {
+      paramsObj: {
+        'name': '',
+        'page': 1,
+        'phone': '',
+        'size': 10
+      },
       dataList: [{
         'id': '0',
         'name': '小米',
@@ -128,11 +134,21 @@ export default {
     myTable
   },
   methods: {
-    getList () {
+    addClick (handleType) {
+      if (handleType === 'add') {
+        this.$router.push({
+          name: 'userEdit',
+          params: {
+            handleType: 'add'
+          }
+        }
+        )
+      }
+    },
+    async getList () {
       console.log('getlist')
-      getTableData().then(res => {
-        console.log(res)
-      })
+      const { data } = await getUserList(this.paramsObj)
+      console.log(data)
     }
   },
   created () {

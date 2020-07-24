@@ -1,16 +1,17 @@
 <template>
 <div class="subject-edit">
-    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" style="width:70%">
-        <FormItem label="题目内容" prop="name">
-            <Input v-model="formValidate.name" type="textarea" :rows="4" placeholder="请输入题目内容"/>
+    <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="100" style="width:70%">
+        <FormItem label="题目内容：" prop="name">
+            <Input v-model="formData.description" type="textarea" :rows="4" placeholder="请输入题目内容"/>
         </FormItem>
-        <FormItem label="题目类型:" prop="name">
-            <Select v-model="optType" style="width:200px">
+        <FormItem label="题目类型：" prop="name">
+            <Select v-model="formData.type" style="width:200px">
                <Option v-for="item in types" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
         </FormItem>
-        <FormItem label="题目选项" prop="age">
+        <FormItem v-if="formData.type == 0" label="题目选项：" prop="age">
           <div class="anwser-item" v-for="(item,index) in anwserList" :key="item.id">
+             <div class="set-answer"><Checkbox v-model="item.isAnwser">答案</Checkbox></div>
             <Input v-model="item.answer" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
             <div class="img-upload">
               <Upload ref="uploader" name="file" :type="(readonly || !isImage)?'select':type" :action="action" :multiple="multiple" :accept="acceptType" :max-size="maxSize" :show-upload-list="showUploadList" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" :on-remove="handleRemove" v-show="!isImage || (isImage && fileList.length<maxLength)" class="posi-rela">
@@ -21,18 +22,17 @@
                   <Button icon="ios-cloud-upload-outline" v-if="!readonly && !isImage">{{btnText}}</Button>
               </Upload>
             </div>
-            <div class="set-answer"><Checkbox v-model="item.isAnwser">答案</Checkbox></div>
            <div class="del-btn">
-            <Button icon="md-close" type="error" size="small" v-if="index>0" @click="delAnwserItem(index)"></Button>
+            <Button icon="md-close" type="error" size="small" v-if="index>0" @click="delAnwserItem(index)">删除</Button>
            </div>
           </div>
           <div class="add-btn"> <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button></div>
         </FormItem>
-         <FormItem label="题目解析" prop="grade">
-            <Input v-model="formValidate.mail" type="textarea" :rows="2" placeholder="请输入题目解析"/>
+         <FormItem label="题目解析：" prop="grade">
+            <Input v-model="formData.a" type="textarea" :rows="2" placeholder="请输入题目解析"/>
         </FormItem>
         <FormItem>
-            <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
+            <Button type="primary" @click="handleSubmit('formData')">提交</Button>
             <Button @click="$router.go(-1)" style="margin-left: 8px">返回</Button>
         </FormItem>
     </Form>
@@ -43,19 +43,22 @@ export default {
   name: 'subject-edit', // 题目编辑页
   data () {
     return {
-      optType: '1',
+      formData: {
+        description: '我是题目内容',
+        type: 0 // 0选择题 1填空题 2论述题',
+      },
       single: true,
       types: [
         {
-          value: '1',
+          value: 0,
           label: '选择题'
         },
         {
-          value: '填空题',
+          value: 1,
           label: '填空题'
         },
         {
-          value: '判断题',
+          value: 2,
           label: '判断题'
         }
       ],
@@ -73,16 +76,6 @@ export default {
           'isAnwser': false
         }
       ],
-      formValidate: {
-        name: '',
-        mail: '',
-        city: '',
-        gender: '',
-        interest: [],
-        date: '',
-        time: '',
-        desc: ''
-      },
       ruleValidate: {
         name: [
           { required: true, message: '请输入题目内容', trigger: 'blur' }
@@ -130,8 +123,8 @@ export default {
           .post(BASE_URL + '/fileUpload', formData, config)
           .then(resp => {
             if (resp.code === 'success') {
-              this.formValidate.labelUrl = resp.data
-              this.formValidate.productlogo = resp.data
+              this.formData.labelUrl = resp.data
+              this.formData.productlogo = resp.data
             } else {
             }
           })
@@ -147,7 +140,7 @@ export default {
     },
     addAnwserItem () {
       if (this.anwserList.length >= 8) {
-        this.$Message.warning('最多输入8个题目选项~')
+        this.$Message.warning('最多设置8个题目选项~')
         return
       }
       let obj = {
@@ -174,6 +167,9 @@ export default {
 .subject-edit{
   display: flex;
   justify-content: center;
+  .ivu-checkbox-wrapper{
+   font-size: 14px;
+  }
   .anwser-item{
    display: flex;
    align-items: center;
