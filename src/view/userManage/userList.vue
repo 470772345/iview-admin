@@ -1,6 +1,6 @@
 <template>
   <div class="user-list">
-   <myTable :searchable='true' :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+   <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -8,8 +8,12 @@ import myTable from '_c/tables'
 import { getUserList, updateUser, delUser } from '@/api/data'
 export default {
   name: 'user-list',
+  components: {
+    myTable
+  },
   data () {
     return {
+      dataRes: {},
       paramsObj: {
         'name': '',
         'page': 1,
@@ -23,7 +27,7 @@ export default {
           title: '序号',
           key: 'index',
           type: 'index',
-          width: 60,
+          width: 70,
           align: 'center'
         },
         {
@@ -55,7 +59,8 @@ export default {
         {
           title: '状态',
           key: 'status',
-          align: 'center'
+          align: 'center',
+          render: (h, params) => h('span', params.row.status === 1 ? '启用' : '停用')
         },
         {
           title: '操作',
@@ -66,10 +71,13 @@ export default {
       ]
     }
   },
-  components: {
-    myTable
-  },
   methods: {
+    // 操作分页组件
+    handlePager (pager) {
+      this.paramsObj.page = pager.current
+      this.paramsObj.size = pager.size
+      this.getList()
+    },
     addClick (handleType) {
       if (handleType === 'add') {
         this.$router.push({
@@ -81,8 +89,15 @@ export default {
         )
       }
     },
-    edit () {
-      console.log('edit')
+    edit (row) {
+      this.$router.push({
+        name: 'userEdit',
+        params: {
+          handleType: 'edit',
+          userObj: row
+        }
+      }
+      )
     },
     delUser (obj) {
       delUser(obj).then(res => {
@@ -99,7 +114,10 @@ export default {
     async getList () {
       console.log('getlist')
       const { data } = await getUserList(this.paramsObj)
-      if (data.data && data.data.records) this.dataList = data.data.records
+      if (data.data && data.data.records) {
+        this.dataList = data.data.records
+        this.dataRes = data.data
+      }
       console.log(data)
     },
     renderOptions (h, params) {

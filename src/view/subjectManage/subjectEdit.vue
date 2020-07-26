@@ -10,17 +10,17 @@
             </Select>
         </FormItem>
         <FormItem v-if="formData.type == 0" label="题目选项：" prop="age">
-          <div class="anwser-item" v-for="(item,index) in anwserList" :key="item.id">
-             <div class="set-answer"><Checkbox v-model="item.isAnwser">答案</Checkbox></div>
-            <Input v-model="item.answer" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
+          <div class="anwser-item" v-for="(item,index) in formData.answers" :key="item.id">
+             <div class="set-answer"><Checkbox v-model="item.is_true">答案</Checkbox></div>
+            <Input v-model="item.text" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
             <div class="img-upload">
-              <Upload ref="uploader" name="file" :type="(readonly || !isImage)?'select':type" :action="action" :multiple="multiple" :accept="acceptType" :max-size="maxSize" :show-upload-list="showUploadList" :default-file-list="defaultList" :on-success="handleSuccess" :on-error="handleError" :on-exceeded-size="handleMaxSize" :before-upload="handleBeforeUpload" :on-remove="handleRemove" v-show="!isImage || (isImage && fileList.length<maxLength)" class="posi-rela">
-                  <input v-if="isEdit" ref="getImageInput" type="file" @change="inputOnchange" class="hiddenInput" @click="replaceClickEvent" />
-                  <div class="upload-block" v-if="!readonly && isImage" :style="{width:iWidth,height:iHeight,lineHeight:iHeight}">
-                      <Icon type="ios-camera" size="20"></Icon>
-                  </div>
-                  <Button icon="ios-cloud-upload-outline" v-if="!readonly && !isImage">{{btnText}}</Button>
-              </Upload>
+            <!-- <template >
+                  <img src="http://120.77.211.97:80/common/uploadFile/20200726/09820b31de1346ac8167a2af636cdc38.png">
+            </template> -->
+             <!-- <Upload :action="action" :before-upload='handleUploadicon()'>
+              <Button icon="ios-cloud-upload-outline">上传图片</Button>
+            </Upload> -->
+            <FileUpload ref="imgUploader" v-model="item.url" isImage :maxLength="1" />
             </div>
            <div class="del-btn">
             <Button icon="md-close" type="error" size="small" v-if="index>0" @click="delAnwserItem(index)">删除</Button>
@@ -39,13 +39,29 @@
  </div>
 </template>
 <script>
+import { upload } from '@/api/subject'
+import FileUpload from '_c/FileUpload'
 export default {
-  name: 'subject-edit', // 题目编辑页
+  name: 'subject-edit', // 题目编辑页,
+  components: {
+    FileUpload
+  },
   data () {
     return {
       formData: {
+        action: '/common/upload',
         description: '我是题目内容',
-        type: 0 // 0选择题 1填空题 2论述题',
+        type: 0, // 0选择题 1填空题 2论述题',
+        answers: [
+          {
+            'code': '',
+            'id': 0,
+            'is_true': true,
+            'sort': 0,
+            'text': '',
+            'type': 0
+          }
+        ]
       },
       single: true,
       types: [
@@ -80,9 +96,6 @@ export default {
         name: [
           { required: true, message: '请输入题目内容', trigger: 'blur' }
         ],
-        mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' }
-        ],
         gender: [
           { required: true, message: '请选择性别', trigger: 'change' }
         ],
@@ -114,20 +127,18 @@ export default {
       ) {
         let formData = new FormData()
         formData.append('file', file)
-        let config = {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+        // let config = {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data'
+        //   }
+        // }res
+        upload(formData).then(res => {
+          if (res.result === 'success') {
+            this.formData.labelUrl = res.data
+            this.formData.productlogo = resp.data
+          } else {
           }
-        }
-        this.http
-          .post(BASE_URL + '/fileUpload', formData, config)
-          .then(resp => {
-            if (resp.code === 'success') {
-              this.formData.labelUrl = resp.data
-              this.formData.productlogo = resp.data
-            } else {
-            }
-          })
+        })
           .catch(() => {})
         return false
       }
@@ -144,10 +155,14 @@ export default {
         return
       }
       let obj = {
-        question: '',
-        answer: '111'
+        'code': '',
+        'id': 0,
+        'is_true': false,
+        'sort': 0,
+        'text': '',
+        'type': 0
       }
-      this.anwserList.push(obj)
+      this.formData.answers.push(obj)
     },
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {

@@ -78,7 +78,6 @@ export default {
   methods: {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
-        debugger
         if (valid) {
           User.addUser(this.formValidate).then(res => {
             if (res.data) {
@@ -91,12 +90,20 @@ export default {
     },
     handleReset (name) {
       this.$refs[name].resetFields()
+    },
+    getUserDetail (userObj) {
+      User.updateUser(userObj).then(res => {
+        if (res) {
+          this.formValidate = res
+        }
+      })
     }
   },
   created () {
     console.log(this.$route.params.handleType)
     if (this.$route.params.handleType !== 'add') {
     // 编辑接口
+      this.getUserDetail(this.$route.params.userObj)
     }
   }
 }

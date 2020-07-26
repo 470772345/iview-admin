@@ -9,7 +9,7 @@
         <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
         </Col>
         <Col span="20" class="right-side">
-         <myTable :searchable='true' :columns='columns' :value='dataList' :border='true'></myTable>
+         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true'></myTable>
         </Col>
     </Row>
     <Modal
@@ -23,6 +23,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
+import { getList, update, delQuestion } from '@/api/subject'
 export default {
   name: 'subject-list',
   components: {
@@ -30,6 +31,11 @@ export default {
   },
   data () {
     return {
+      dataRes: {},
+      paramsObj: {
+        page: 1,
+        size: 10
+      },
       isShowAddCategory: false,
       cList: [
         {
@@ -47,29 +53,14 @@ export default {
           isSelected: false,
           name: '题库类别3'
         }],
-      dataList: [{
-        'id': '0',
-        'content': '中国最大的淡水湖是（）？',
-        'status': '正常',
-        'analysis': '最大的淡水湖是',
-        'subjectType': '单选题',
-        'answer': 'A'
-      },
-      {
-        'id': '1',
-        'content': '下列哪些选项可以提示身体免疫力？',
-        'status': '停用',
-        'analysis': '【解析】打篮球可以锻炼身体',
-        'subjectType': '多选题',
-        'answer': 'AD'
-      }
-      ],
+      dataList: [],
       columns: [
         {
           title: '试题内容',
-          key: 'content',
+          key: 'description',
           width: 300,
-          align: 'center'
+          align: 'center',
+          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.description}</a>)
         },
         {
           title: '解析',
@@ -98,29 +89,58 @@ export default {
           title: '操作',
           key: 'actor',
           align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({ path: '../subjectManage/subjectEdit?id=' + this.dataList[params.index].id })
-                  }
-                }
-              }, '编辑')
-            ])
-          }
+          render: (h, params) => this.renderOptions(h, params)
         }
       ]
     }
   },
   methods: {
+    // 操作分页组件
+    handlePager (pager) {
+      this.paramsObj.page = pager.current
+      this.paramsObj.size = pager.size
+      this.getList()
+    },
+    addClick (handleType) {
+      if (handleType === 'add') {
+        this.$router.push({
+          name: 'subjectEdit',
+          params: {
+            handleType: 'add'
+          }
+        }
+        )
+      }
+    },
+    edit (row) {
+      this.$router.push({
+        name: 'subjectEdit',
+        params: {
+          handleType: 'edit',
+          userObj: row
+        }
+      }
+      )
+    },
+    delQuestion (obj) {
+      delQuestion(obj).then(res => {
+        this.$Message.success('删除成功')
+        this.getList()
+      })
+    },
+    updateStatus (obj, status) {
+      obj.status = status
+      update(obj).then(res => {
+        this.$Message.success('操作成功')
+      })
+    },
+    async getList () {
+      const { data } = await getList(this.paramsObj)
+      if (data.data && data.data.records) {
+        this.dataList = data.data.records
+        this.dataRes = data.data
+      }
+    },
     cancel () {
       this.isShowAddCategory = false
     },
@@ -129,9 +149,6 @@ export default {
     },
     addCategoryClick () {
       this.isShowAddCategory = true
-    },
-    getDataList () {
-
     },
     selectClick (item) {
       // 切换选中样式
@@ -147,7 +164,87 @@ export default {
         }
       })
       console.log(item.name)
+    },
+    renderOptions (h, params) {
+      if (params.row.status === 0) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'success',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 1)
+              }
+            }
+          }, '启用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delQuestion(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      } else if (params.row.status === 1) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'warning',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 0)
+              }
+            }
+          }, '停用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delQuestion(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      }
     }
+  },
+  created () {
+    this.getList(this.paramsObj)
   }
 }
 </script>

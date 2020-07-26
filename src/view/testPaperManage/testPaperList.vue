@@ -9,10 +9,10 @@
         <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
         </Col>
         <Col span="20" class="right-side">
-         <myTable :searchable='true' :columns='columns' :value='dataList' :border='true'></myTable>
+         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true'></myTable>
         </Col>
     </Row>
-    <Modal
+    <!-- <Modal
         v-model="isShowAddCategory"
         title="新增分类"
         @on-ok="addNewCategory()"
@@ -25,16 +25,23 @@
         title="题目列表"
         @on-ok="QutClick()"
         @on-cancel="cancel">
-        <myTable :searchable='true' :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
-    </Modal>
+        <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
+    </Modal> -->
   </div>
 </template>
 <script>
 import myTable from '_c/tables'
+import Pager from '_c/pager'
+import { getList, update, delExam } from '@/api/testPaper'
 export default {
   name: 'test-paper-list',
   data () {
     return {
+      dataRes: {},
+      paramsObj: {
+        page: 1,
+        size: 10
+      },
       isShowQutList: false,
       isShowAddCategory: false,
       cList: [
@@ -86,21 +93,7 @@ export default {
         'answer': 'AD'
       }
       ],
-      dataList: [{
-        'id': '0',
-        'name': '高一上学期模拟考试试题1',
-        'status': '正常',
-        'totalNum': '100',
-        'questionNum': '100'
-      },
-      {
-        'id': '1',
-        'name': '初一下学期模拟考试试题',
-        'status': '停用',
-        'totalNum': '100',
-        'questionNum': '80'
-      }
-      ],
+      dataList: [],
       qutListCols: [
         {
           type: 'selection',
@@ -135,13 +128,14 @@ export default {
           title: '序号',
           type: 'index',
           key: 'index',
-          width: 60,
+          width: 70,
           align: 'center'
         },
         {
           title: '试卷名称',
-          key: 'name',
-          align: 'center'
+          key: 'title',
+          align: 'center',
+          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.title}</a>)
         },
         {
           title: '总分',
@@ -162,32 +156,62 @@ export default {
           title: '操作',
           key: 'actor',
           align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({ path: '../testPaperManage/testPaperEdit?id=' + this.dataList[params.index].id })
-                  }
-                }
-              }, '编辑')
-            ])
-          }
+          render: (h, params) => this.renderOptions(h, params)
         }
       ]
     }
   },
   components: {
-    myTable
+    myTable,
+    Pager
   },
   methods: {
+    // 操作分页组件
+    handlePager (pager) {
+      this.paramsObj.page = pager.current
+      this.paramsObj.size = pager.size
+      this.getList()
+    },
+    addClick (handleType) {
+      if (handleType === 'add') {
+        this.$router.push({
+          name: 'testPaperEdit',
+          params: {
+            handleType: 'add'
+          }
+        }
+        )
+      }
+    },
+    edit (row) {
+      this.$router.push({
+        name: 'testPaperEdit',
+        params: {
+          handleType: 'edit',
+          userObj: row
+        }
+      }
+      )
+    },
+    delExam (obj) {
+      delExam(obj).then(res => {
+        this.$Message.success('删除成功')
+        this.getList()
+      })
+    },
+    updateStatus (obj, status) {
+      obj.status = status
+      update(obj).then(res => {
+        this.$Message.success('操作成功')
+      })
+    },
+    async getList () {
+      const { data } = await getList(this.paramsObj)
+      if (data.data && data.data.records) {
+        this.dataList = data.data.records
+        this.dataRes = data.data
+      }
+    },
     selectQutClick (selection) {
       console.log('选择', selection)
     },
@@ -214,7 +238,87 @@ export default {
         }
       })
       console.log(item.name)
+    },
+    renderOptions (h, params) {
+      if (params.row.status === 0) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'success',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 1)
+              }
+            }
+          }, '启用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delUser(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      } else if (params.row.status === 1) {
+        return h('div', [
+          h('Button', {
+            props: {
+              type: 'warning',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            },
+            on: {
+              click: () => {
+                this.updateStatus(params.row, 0)
+              }
+            }
+          }, '停用'),
+          h('Poptip', {
+            props: {
+              confirm: true,
+              title: '确定删除此条信息吗?',
+              transfer: true
+            },
+            on: {
+              'on-ok': () => {
+                this.delUser(params.row)
+              }
+            }
+          }, [h('Button', {
+            props: {
+              type: 'error',
+              size: 'small'
+            },
+            style: {
+              marginRight: '5px'
+            }
+          }, '删除')])
+        ])
+      }
     }
+  },
+  created () {
+    this.getList(this.paramsObj)
   }
 }
 </script>

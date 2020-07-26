@@ -1,9 +1,9 @@
 <template>
   <div>
     <div v-if="searchable && searchPlace === 'top'" class="search-con search-con-top">
-      <Select v-model="searchKey" class="search-col">
+      <!-- <Select v-model="searchKey" class="search-col">
         <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option>
-      </Select>
+      </Select> -->
       <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button @click="handleSearch" class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div>
@@ -46,8 +46,9 @@
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div>
     <div class="add-btn" v-if="enableAdd">
-    <Button class="search-btn" type="primary" style="margin-right:10px" @click="addClick('add')"><Icon type="search"/>新增</Button>
+    <Button class="search-btn" type="primary" style="margin:10px 0" @click="addClick('add')"><Icon type="search"/>新增</Button>
     </div>
+    <Pager :config="dataRes" @on-change="handlePager"></Pager>
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
   </div>
 </template>
@@ -55,10 +56,17 @@
 <script>
 import TablesEdit from './edit.vue'
 import handleBtns from './handle-btns'
+import Pager from '_c/pager'
 import './index.less'
 export default {
   name: 'Tables',
   props: {
+    dataRes: {
+      type: Object,
+      default () {
+        return {}
+      }
+    },
     value: {
       type: Array,
       default () {
@@ -161,7 +169,13 @@ export default {
   created () {
     console.log('table')
   },
+  components: {
+    Pager
+  },
   methods: {
+    handlePager (pager) {
+      this.$emit('handlePager', pager)
+    },
     addClick (handleType) {
       this.$emit('addClick', handleType)
     },
