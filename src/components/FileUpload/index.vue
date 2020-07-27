@@ -1,18 +1,20 @@
 <template>
     <section class="FileUpload" :class="isImage?'img-uploader':'normal'">
-        <div class="image-block" v-for="(item,index) in fileList" :key="index" :style="{width:iWidth,height:iHeight,lineHeight:iHeight}" v-if="isImage">
+       <div v-if="isImage">
+        <div class="image-block" v-for="(item,index) in fileList" :key="index" >
             <!-- <div class="image-block"> -->
             <template v-if="item.status === 'finished'">
-                <img :src="item.url | pathFilter" :onerror="errorImg" class="preview-img">
+                <img :src="item.url.data | pathFilter" :onerror="errorImg" class="preview-img">
                 <div class="action-mask">
-                    <Icon type="ios-eye-outline" size="20" style="margin-right:3px;" @click="$preview.open(index,previewList)"></Icon>
+                    <!-- <Icon type="ios-eye-outline" size="20" style="margin-right:3px;" @click="$preview.open(index,previewList)"></Icon> -->
                     <Icon type="ios-trash-outline" size="20" @click.native="handleDelete(item)" v-if="!readonly"></Icon>
                 </div>
             </template>
             <template v-else>
                 <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
             </template>
-        </div>
+         </div>
+       </div>
         <Modal v-model="visiable" title="裁剪图片" @on-ok="modalOk" @on-cancel="modalCancel" :mask-closable="false">
             <div style="height: 400px">
                 <template v-if="visiable">
@@ -312,8 +314,9 @@ export default {
     getData () {
       const temp = []
       this.fileList.forEach(v => {
-        v.url && temp.push(v.url)
+        v.url && v.url.data && temp.push(v.url.data)
       })
+      debugger
       const result = temp.join(',')
       return result
     },
@@ -394,9 +397,9 @@ export default {
       margin-right: 8px;
       margin-bottom: 8px;
       padding: 2px;
-      width: 60px;
+      width: 120px;
       height: 60px;
-      line-height: 58px;
+      line-height: 60px;
       text-align: center;
       overflow: hidden;
       border-radius: 4px;

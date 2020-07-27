@@ -9,7 +9,7 @@
         <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
         </Col>
         <Col span="20" class="right-side">
-         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true'></myTable>
+         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
         </Col>
     </Row>
     <Modal

@@ -9,10 +9,10 @@ const { homeName } = config
 
 Vue.use(Router)
 // 防止重复点击爆红 https://www.cnblogs.com/xinheng/p/13019818.html 06-03
-const originalPush = Router.prototype.push
-Router.prototype.push = function push (location) {
-  return originalPush.call(this, location).catch(err => err)
-}
+// const originalPush = Router.prototype.push
+// Router.prototype.push = function push (location) {
+//   return originalPush.call(this, location).catch(err => err)
+// }
 const router = new Router({
   routes,
   mode: 'history'
