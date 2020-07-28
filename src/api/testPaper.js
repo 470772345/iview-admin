@@ -2,7 +2,7 @@ import axios from '@/libs/api.request'
 
 export const getList = (info) => {
   return axios.request({
-    url: '/system/tExamination/list',
+    url: '/system/tCategoryExamination/list',
     data: info,
     method: 'post'
   })
@@ -10,7 +10,7 @@ export const getList = (info) => {
 
 export const add = (info) => {
   return axios.request({
-    url: '/system/tExamination/add',
+    url: '/system/tCategoryExamination/add',
     data: info,
     method: 'post'
   })
@@ -18,7 +18,7 @@ export const add = (info) => {
 
 export const update = (info) => {
   return axios.request({
-    url: '/system/tExamination/update',
+    url: '/system/tCategoryExamination/delete',
     data: info,
     method: 'post'
   })

@@ -1,11 +1,19 @@
 <template>
 <div class="user-edit">
-    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80" style="width:90%">
+    <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="95" style="width:90%">
         <FormItem label="试卷名称" prop="name">
-            <Input class="input-width" v-model="formValidate.name" placeholder="请输入试卷名称" />
+            <Input class="input-width" v-model="formData.name" placeholder="请输入试卷名称" />
+        </FormItem>
+        <FormItem label="试卷总用时" prop="name">
+            <Input class="input-width" v-model="formData.name" placeholder="请输入试卷总用时" />
         </FormItem>
         <FormItem label="每题分值" prop="age">
-            <Input class="input-width"  v-model="formValidate.mail" placeholder="请输入每题分值" />
+            <Input class="input-width"  v-model="formData.mail" placeholder="请输入每题分值" />
+        </FormItem>
+        <FormItem label="试卷类别" prop="category_id">
+            <Select v-model="formData.category_id" style="width:200px">
+            <Option v-for="item in categoryList" :value="item.id" :key="item.value">{{ item.name }}</Option>
+            </Select>
         </FormItem>
         <div class="select-btn">
           <Button type="primary" @click="selectQuestion()">选择题目</Button>
@@ -15,7 +23,7 @@
           <myTable :columns='selectedQstList' :value='dataList' :border='true' :enableAdd='false' @on-selection-change="onSelectionChange"></myTable>
         </div>
         <div class="footer">
-            <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
+            <Button type="primary" @click="handleSubmit('formData')">提交</Button>
             <Button @click="$router.go(-1)" style="margin-left: 8px">返回</Button>
         </div>
     </Form>
@@ -31,12 +39,19 @@
 </template>
 <script>
 import myTable from '_c/tables'
+import { getCategoryList } from '@/api/testPaper'
 export default {
   name: 'user-edit',
   data () {
     return {
+      categoryListParams: {
+        'name': '',
+        'page': 1,
+        'size': 10
+      },
+      categoryList: [],
       isShowAddQuestion: false,
-      formValidate: {
+      formData: {
         name: '',
         mail: '',
         city: '',
@@ -224,6 +239,14 @@ export default {
     myTable
   },
   methods: {
+    getCategoryList () {
+      getCategoryList(this.categoryListParams).then(data => {
+        if (data.data && data.data.data && data.data.data.records) {
+          this.categoryList = data.data.data.records
+          this.formData.category_id = (this.categoryList[0] && this.categoryList[0].id)
+        }
+      })
+    },
     onSelectionChange (selection) {
       console.log('当前选中：', selection)
     },
@@ -247,6 +270,9 @@ export default {
     handleReset (name) {
       this.$refs[name].resetFields()
     }
+  },
+  created () {
+    this.getCategoryList()
   }
 }
 </script>

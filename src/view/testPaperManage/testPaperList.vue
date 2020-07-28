@@ -6,10 +6,10 @@
           <div>试卷分类</div>
           <div><Button type='primary' @click="addCategoryClick">新增</Button></div>
           </div>
-        <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">{{item.name}}</div>
+        <div :class="['c-item',item.id==curCategoryId?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">{{item.name}}</div>
         </Col>
         <Col span="20" class="right-side">
-         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true'></myTable>
+         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
         </Col>
     </Row>
     <Modal
@@ -38,6 +38,7 @@ export default {
   name: 'test-paper-list',
   data () {
     return {
+      curCategoryId: 0,
       categoryList: [],
       categoryListParams: {
         'name': '',
@@ -52,6 +53,7 @@ export default {
       },
       dataRes: {},
       paramsObj: {
+        category_id: 0,
         page: 1,
         size: 10
       },
@@ -226,7 +228,7 @@ export default {
       TestPaperApi.addCategory(this.categoryParams).then(data => {
         if (data.data && data.data.data) {
           this.$Message.success('操作成功')
-          this.getCategoryList()
+          this.getList()
         }
       })
     },
@@ -235,18 +237,11 @@ export default {
     },
     selectClick (item) {
       // 切换选中样式
-      this.switchSelectedStyle(item)
+      this.curCategoryId = item.id
+      this.paramsObj.category_id = item.id
+      // this.switchSelectedStyle(item)
       // 刷新对应分类列表
-    },
-    switchSelectedStyle (item) {
-      this.cList.map(function (arrayItem) {
-        if (item.cId === arrayItem.cId) {
-          arrayItem.isSelected = true
-        } else {
-          arrayItem.isSelected = false
-        }
-      })
-      console.log(item.name)
+      this.getCategoryList()
     },
     renderOptions (h, params) {
       if (params.row.status === 0) {
