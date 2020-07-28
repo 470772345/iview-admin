@@ -6,18 +6,18 @@
           <div>试卷分类</div>
           <div><Button type='primary' @click="addCategoryClick">新增</Button></div>
           </div>
-        <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
+        <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">{{item.name}}</div>
         </Col>
         <Col span="20" class="right-side">
          <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true'></myTable>
         </Col>
     </Row>
-    <!-- <Modal
+    <Modal
         v-model="isShowAddCategory"
         title="新增分类"
         @on-ok="addNewCategory()"
         @on-cancel="cancel">
-        <Input placeholder="请输入分类名称" />
+        <Input placeholder="请输入分类名称" v-model="categoryParams.name" />
     </Modal>
     <Modal
         width="60%"
@@ -26,17 +26,30 @@
         @on-ok="QutClick()"
         @on-cancel="cancel">
         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
-    </Modal> -->
+    </Modal>
   </div>
 </template>
 <script>
 import myTable from '_c/tables'
 import Pager from '_c/pager'
-import { getList, update, delExam } from '@/api/testPaper'
+// import { getList, update, delExam } from '@/api/testPaper'
+import * as TestPaperApi from '@/api/testPaper'
 export default {
   name: 'test-paper-list',
   data () {
     return {
+      categoryList: [],
+      categoryListParams: {
+        'name': '',
+        'page': 1,
+        'size': 10
+      },
+      categoryParams: {
+        'id': 0,
+        'name': '',
+        'sort': '',
+        'url': ''
+      },
       dataRes: {},
       paramsObj: {
         page: 1,
@@ -44,22 +57,6 @@ export default {
       },
       isShowQutList: false,
       isShowAddCategory: false,
-      cList: [
-        {
-          cId: '0',
-          isSelected: true,
-          name: '数学'
-        },
-        {
-          cId: '1',
-          isSelected: false,
-          name: '历史'
-        },
-        {
-          cId: '2',
-          isSelected: false,
-          name: '音乐'
-        }],
       qutDataList: [{
         'id': '0',
         'content': '中国最大的淡水湖是（）？',
@@ -194,19 +191,19 @@ export default {
       )
     },
     delExam (obj) {
-      delExam(obj).then(res => {
+      TestPaperApi.delExam(obj).then(res => {
         this.$Message.success('删除成功')
         this.getList()
       })
     },
     updateStatus (obj, status) {
       obj.status = status
-      update(obj).then(res => {
+      TestPaperApi.update(obj).then(res => {
         this.$Message.success('操作成功')
       })
     },
     async getList () {
-      const { data } = await getList(this.paramsObj)
+      const { data } = await TestPaperApi.getList(this.paramsObj)
       if (data.data && data.data.records) {
         this.dataList = data.data.records
         this.dataRes = data.data
@@ -218,8 +215,20 @@ export default {
     cancel () {
       this.isShowAddCategory = false
     },
+    getCategoryList () {
+      TestPaperApi.getCategoryList(this.categoryParams).then(data => {
+        if (data.data && data.data.data && data.data.data.records) {
+          this.categoryList = data.data.data.records
+        }
+      })
+    },
     addNewCategory () {
-      console.log('新增分类')
+      TestPaperApi.addCategory(this.categoryParams).then(data => {
+        if (data.data && data.data.data) {
+          this.$Message.success('操作成功')
+          this.getCategoryList()
+        }
+      })
     },
     addCategoryClick () {
       this.isShowAddCategory = true
@@ -319,6 +328,7 @@ export default {
   },
   created () {
     this.getList(this.paramsObj)
+    this.getCategoryList(this.categoryListParams)
   }
 }
 </script>

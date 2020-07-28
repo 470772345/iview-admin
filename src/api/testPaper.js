@@ -31,3 +31,35 @@ export const delExam = (info) => {
     method: 'post'
   })
 }
+
+export const addCategory = (info) => {
+  return axios.request({
+    url: '/system/tCategory/add',
+    data: info,
+    method: 'post'
+  })
+}
+
+export const delCategory = (info) => {
+  return axios.request({
+    url: '/system/tCategory/delete',
+    data: info,
+    method: 'post'
+  })
+}
+
+export const getCategoryList = (info) => {
+  return axios.request({
+    url: '/system/tCategory/list',
+    data: info,
+    method: 'post'
+  })
+}
+
+export const updateCategory = (info) => {
+  return axios.request({
+    url: '/system/tCategory/update',
+    data: info,
+    method: 'post'
+  })
+}
