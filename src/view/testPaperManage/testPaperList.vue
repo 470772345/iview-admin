@@ -4,9 +4,15 @@
         <Col span="4" class="left-side">
         <div class="c-header" >
           <div>试卷分类</div>
-          <div><Button type='primary' @click="addCategoryClick">新增</Button></div>
+          <div><Button type='primary' @click="showCategoryModal">新增</Button></div>
           </div>
-        <div :class="['c-item',item.id==curCategoryId?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">{{item.name}}</div>
+        <div :class="['c-item',item.id==curCategoryId?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">
+          <div>{{item.name}}</div>
+          <div class="c-btns">
+            <Button  type="primary" shape="circle" icon="ios-create-outline" @click="showCategoryModal('edit',item)"></Button>
+            <Button style="margin-left:10px" type='error' shape="circle" icon="md-close" @click="delCategoryClick('del')"></Button>
+          </div>
+        </div>
         </Col>
         <Col span="20" class="right-side">
          <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
@@ -14,10 +20,10 @@
     </Row>
     <Modal
         v-model="isShowAddCategory"
-        title="新增分类"
-        @on-ok="addNewCategory()"
+        :title="handleText"
+        @on-ok="handleCategoryClick()"
         @on-cancel="cancel">
-        <Input placeholder="请输入分类名称" v-model="categoryParams.name" />
+        <Input placeholder="请输入分类名称(最多8位)" :maxlength="maxLen" v-model="categoryParams.name" />
     </Modal>
     <Modal
         width="60%"
@@ -38,6 +44,9 @@ export default {
   name: 'test-paper-list',
   data () {
     return {
+      handleCType: 'add',
+      handleText: '新增分类',
+      maxLen: 8,
       curCategoryId: 0,
       categoryList: [],
       categoryListParams: {
@@ -224,15 +233,32 @@ export default {
         }
       })
     },
-    addNewCategory () {
-      TestPaperApi.addCategory(this.categoryParams).then(data => {
-        if (data.data && data.data.data) {
-          this.$Message.success('操作成功')
-          this.getList()
+    handleCategoryClick () {
+      if (this.handleCType === 'add') {
+        if (!this.categoryParams.name) {
+          this.$Message.warning('分类名称不能空~')
+          return
         }
-      })
+        TestPaperApi.addCategory(this.categoryParams).then(data => {
+          if (data.data && data.data.data) {
+            this.$Message.success('操作成功')
+            this.getCategoryList()
+          }
+        })
+      } else if (this.handleType === 'edit') {
+
+      } else {}
     },
-    addCategoryClick () {
+    showCategoryModal (handleType, item) {
+      if (handleType === 'edit') {
+        this.categoryParams.name = item.name
+        this.handleCType = 'edit'
+        this.handleText = '编辑分类'
+      } else {
+        this.categoryParams.name = ''
+        this.handleCType = 'add'
+        this.handleText = '新增分类'
+      }
       this.isShowAddCategory = true
     },
     selectClick (item) {
@@ -240,8 +266,8 @@ export default {
       this.curCategoryId = item.id
       this.paramsObj.category_id = item.id
       // this.switchSelectedStyle(item)
-      // 刷新对应分类列表
-      this.getCategoryList()
+      // 刷新对应分类试卷列表
+      this.getList()
     },
     renderOptions (h, params) {
       if (params.row.status === 0) {
@@ -346,11 +372,14 @@ export default {
    padding: 10px;
  }
  .c-item{
+   display: flex;
+   justify-content: space-between;
    padding:10px 0;
    color:#222;
    font-size: 14px;
    margin:5px;
    padding-left: 6px;
+   border-bottom: solid 1px #eee;
  }
  .c-item:hover{
    background-color: #edf7ff;
