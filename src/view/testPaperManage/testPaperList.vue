@@ -10,7 +10,7 @@
           <div>{{item.name}}</div>
           <div class="c-btns">
             <Button  type="primary" shape="circle" icon="ios-create-outline" @click="showCategoryModal('edit',item)"></Button>
-            <Button style="margin-left:10px" type='error' shape="circle" icon="md-close" @click="delCategoryClick('del')"></Button>
+            <Button style="margin-left:10px" type='error' shape="circle" icon="md-close" @click.stop="delCategoryClick(item)"></Button>
           </div>
         </div>
         </Col>
@@ -38,7 +38,6 @@
 <script>
 import myTable from '_c/tables'
 import Pager from '_c/pager'
-// import { getList, update, delExam } from '@/api/testPaper'
 import * as TestPaperApi from '@/api/testPaper'
 export default {
   name: 'test-paper-list',
@@ -52,7 +51,7 @@ export default {
       categoryListParams: {
         'name': '',
         'page': 1,
-        'size': 10
+        'size': 20
       },
       categoryParams: {
         'id': 0,
@@ -68,39 +67,7 @@ export default {
       },
       isShowQutList: false,
       isShowAddCategory: false,
-      qutDataList: [{
-        'id': '0',
-        'content': '中国最大的淡水湖是（）？',
-        'status': '正常',
-        'analysis': '最大的淡水湖是',
-        'subjectType': '单选题',
-        'answer': 'A'
-      },
-      {
-        'id': '1',
-        'content': '下列哪些选项可以提示身体免疫力？',
-        'status': '停用',
-        'analysis': '【解析】打篮球可以锻炼身体',
-        'subjectType': '多选题',
-        'answer': 'AD'
-      },
-      {
-        'id': '0',
-        'content': '中国最大的淡水湖是（）？',
-        'status': '正常',
-        'analysis': '最大的淡水湖是',
-        'subjectType': '单选题',
-        'answer': 'A'
-      },
-      {
-        'id': '1',
-        'content': '下列哪些选项可以提示身体免疫力？',
-        'status': '停用',
-        'analysis': '【解析】打篮球可以锻炼身体',
-        'subjectType': '多选题',
-        'answer': 'AD'
-      }
-      ],
+      qutDataList: [], // 题目列表
       dataList: [],
       qutListCols: [
         {
@@ -147,12 +114,17 @@ export default {
         },
         {
           title: '总分',
-          key: 'totalNum',
+          key: 'total_scores',
           align: 'center'
         },
         {
           title: '题数',
-          key: 'questionNum',
+          key: 'total_ques',
+          align: 'center'
+        },
+        {
+          title: '试卷总用时',
+          key: 'minute_limit',
           align: 'center'
         },
         {
@@ -226,8 +198,16 @@ export default {
     cancel () {
       this.isShowAddCategory = false
     },
+    delCategoryClick (item) {
+      TestPaperApi.delCategory(item).then(res => {
+        if (res.data) {
+          this.$Message.success('操作成功')
+          this.getCategoryList()
+        }
+      })
+    },
     getCategoryList () {
-      TestPaperApi.getCategoryList(this.categoryParams).then(data => {
+      TestPaperApi.getCategoryList(this.categoryListParams).then(data => {
         if (data.data && data.data.data && data.data.data.records) {
           this.categoryList = data.data.data.records
         }

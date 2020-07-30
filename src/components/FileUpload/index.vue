@@ -316,7 +316,6 @@ export default {
       this.fileList.forEach(v => {
         v.url && v.url.data && temp.push(v.url.data)
       })
-      debugger
       const result = temp.join(',')
       return result
     },

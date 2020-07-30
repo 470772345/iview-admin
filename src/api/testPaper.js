@@ -10,7 +10,7 @@ export const getList = (info) => {
 
 export const add = (info) => {
   return axios.request({
-    url: '/system/tCategoryExamination/add',
+    url: '/system/tExamination/add',
     data: info,
     method: 'post'
   })

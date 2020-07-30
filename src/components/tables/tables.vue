@@ -48,7 +48,7 @@
     <div class="add-btn" v-if="enableAdd">
     <Button class="search-btn" type="primary" style="margin:10px 0" @click="addClick('add')"><Icon type="search"/>新增</Button>
     </div>
-    <Pager :config="dataRes" @on-change="handlePager"></Pager>
+    <Pager :config="dataRes" @on-change="handlePager" v-if="hasPager"></Pager>
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
   </div>
 </template>
@@ -61,6 +61,10 @@ import './index.less'
 export default {
   name: 'Tables',
   props: {
+    hasPager: {
+      type: Boolean,
+      default: true
+    },
     dataRes: {
       type: Object,
       default () {

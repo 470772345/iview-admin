@@ -1,14 +1,14 @@
 <template>
 <div class="user-edit">
     <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="95" style="width:90%">
-        <FormItem label="试卷名称" prop="name">
-            <Input class="input-width" v-model="formData.name" placeholder="请输入试卷名称" />
+        <FormItem label="试卷名称" prop="title">
+            <Input class="input-width" v-model="formData.title" placeholder="请输入试卷名称" />
         </FormItem>
-        <FormItem label="试卷总用时" prop="name">
-            <Input class="input-width" v-model="formData.name" placeholder="请输入试卷总用时" />
+        <FormItem label="试卷总用时" >
+           <InputNumber :max="200" :min="1" v-model="formData.minute_limit"></InputNumber>
         </FormItem>
-        <FormItem label="每题分值" prop="age">
-            <Input class="input-width"  v-model="formData.mail" placeholder="请输入每题分值" />
+        <FormItem label="试卷总分" prop="single_scores">
+            <Input class="input-width" disabled  v-model="formData.total_scores" placeholder="试卷总分" />
         </FormItem>
         <FormItem label="试卷类别" prop="category_id">
             <Select v-model="formData.category_id" style="width:200px">
@@ -20,7 +20,7 @@
           <Button type="error" style="margin-left:20px" @click="delQuestion()" >批量删除</Button>
        </div>
         <div>
-          <myTable :columns='selectedQstList' :value='dataList' :border='true' :enableAdd='false' @on-selection-change="onSelectionChange"></myTable>
+          <myTable :hasPager="false" :columns='selectedCols' :value='selectedQstList' :border='true' :enableAdd='false' @on-selection-change="onSelectionChange"></myTable>
         </div>
         <div class="footer">
             <Button type="primary" @click="handleSubmit('formData')">提交</Button>
@@ -31,19 +31,25 @@
         v-model="isShowAddQuestion"
         width='80%'
         title="选择题目"
-        @on-ok="addNewCategory()"
+        @on-ok="commitSelect()"
         @on-cancel="cancel">
-        <myTable :searchable='true' :columns='columns' :value='dataList' :border='true' :enableAdd='false' ></myTable>
+        <myTable :searchable='true' :columns='columns' :value='quesDataList' :border='true' :enableAdd='false' @on-selection-change="onSelection2" ></myTable>
     </Modal>
  </div>
 </template>
 <script>
 import myTable from '_c/tables'
-import { getCategoryList } from '@/api/testPaper'
+import { getCategoryList, add } from '@/api/testPaper'
+import { getList } from '@/api/subject'
 export default {
   name: 'user-edit',
   data () {
     return {
+      seletcedOnModalList: [],
+      quesParamsObj: {
+        page: 1,
+        size: 10
+      },
       categoryListParams: {
         'name': '',
         'page': 1,
@@ -52,61 +58,26 @@ export default {
       categoryList: [],
       isShowAddQuestion: false,
       formData: {
-        name: '',
-        mail: '',
-        city: '',
-        gender: '',
-        interest: [],
-        date: '',
-        time: '',
-        desc: ''
+        'single_scores': 2,
+        'category_id': 0,
+        'id': 0,
+        'minute_limit': 1,
+        'question_ids': [],
+        'sort': 0,
+        'title': '',
+        'total_scores': '0'
       },
       ruleValidate: {
-        name: [
-          { required: true, message: '请输入用户名称', trigger: 'blur' }
+        title: [
+          { required: true, message: '请输入试卷标题', trigger: 'blur' }
         ],
-        age: [
-          { required: true, message: '请输入年龄', trigger: 'blur' }
-        ],
-        mobile: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' }
-        ],
-        gender: [
-          { required: true, message: '请选择性别', trigger: 'change' }
-        ],
-        interest: [
-          { required: true, type: 'array', min: 1, message: 'Choose at least one hobby', trigger: 'change' },
-          { type: 'array', max: 2, message: 'Choose two hobbies at best', trigger: 'change' }
-        ],
-        date: [
-          { required: true, type: 'date', message: 'Please select the date', trigger: 'change' }
-        ],
-        time: [
-          { required: true, type: 'string', message: 'Please select time', trigger: 'change' }
-        ],
-        desc: [
-          { required: true, message: 'Please enter a personal introduction', trigger: 'blur' },
-          { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }
+        minute_limit: [
+          { required: true, message: '请输入试卷总用时', trigger: 'blur' }
         ]
       },
-      dataList: [{
-        'id': '0',
-        'content': '中国最大的淡水湖是（）？',
-        'status': '正常',
-        'analysis': '最大的淡水湖是',
-        'subjectType': '单选题',
-        'answer': 'A'
-      },
-      {
-        'id': '1',
-        'content': '下列哪些选项可以提示身体免疫力？',
-        'status': '停用',
-        'analysis': '【解析】打篮球可以锻炼身体',
-        'subjectType': '多选题',
-        'answer': 'AD'
-      }
-      ],
-      selectedQstList: [
+      selectedQstList: [],
+      quesDataList: [],
+      selectedCols: [
         {
           type: 'selection',
           width: 60,
@@ -121,14 +92,8 @@ export default {
         },
         {
           title: '试题内容',
-          key: 'content',
+          key: 'description',
           width: 360,
-          align: 'center'
-        },
-        {
-          title: '解析',
-          key: 'analysis',
-          width: 300,
           align: 'center'
         },
         {
@@ -158,9 +123,7 @@ export default {
                   marginRight: '5px'
                 },
                 on: {
-                  click: () => {
-                    console.log('删除')
-                  }
+                  click: () => this.delHasSelectdQ(params.row.id)
                 }
               }, '删除')
             ])
@@ -182,14 +145,8 @@ export default {
         },
         {
           title: '试题内容',
-          key: 'content',
+          key: 'description',
           width: 360,
-          align: 'center'
-        },
-        {
-          title: '解析',
-          key: 'analysis',
-          width: 300,
           align: 'center'
         },
         {
@@ -208,29 +165,6 @@ export default {
           title: '状态',
           key: 'status',
           align: 'center'
-        },
-        {
-          title: '操作',
-          key: 'actor',
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({ path: '../subjectManage/subjectEdit?id=' + this.dataList[params.index].id })
-                  }
-                }
-              }, '编辑')
-            ])
-          }
         }
       ]
     }
@@ -239,6 +173,10 @@ export default {
     myTable
   },
   methods: {
+    commitSelect () {
+      console.log('选中的题目')
+      this.selectedQstList = this.seletcedOnModalList
+    },
     getCategoryList () {
       getCategoryList(this.categoryListParams).then(data => {
         if (data.data && data.data.data && data.data.data.records) {
@@ -249,12 +187,25 @@ export default {
     },
     onSelectionChange (selection) {
       console.log('当前选中：', selection)
+      debugger
+    },
+    // modal 选中的
+    onSelection2 (selection) {
+      this.seletcedOnModalList = selection
     },
     cancel () {
       this.isShowAddQuestion = false
     },
     delQuestion () {
       console.log('批量删除')
+    },
+    delHasSelectdQ (id) {
+      for (let i = 0; i < this.selectedQstList.length; i++) {
+        if (this.selectedQstList[i].id === id) {
+          this.selectedQstList.splice(i, 1)
+          break
+        }
+      }
     },
     selectQuestion () {
       console.log('选择题目')
@@ -263,16 +214,48 @@ export default {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$Message.success('提交成功!')
+          console.log(this.formData)
+          let tempArr = []
+          for (let i = 0; i < this.quesDataList.length; i++) {
+            tempArr.push(this.quesDataList[i].id)
+          }
+          this.formData.total_ques = this.quesDataList.length
+          this.formData.total_scores = this.formData.total_ques * this.formData.single_scores
+          this.formData.question_ids = tempArr
+          add(this.formData).then(res => {
+            if (res.data) {
+              this.$Message.success('提交成功!')
+              this.$router.go(-1)
+            }
+          })
         }
       })
     },
     handleReset (name) {
       this.$refs[name].resetFields()
+    },
+    async getList () {
+      const { data } = await getList(this.quesParamsObj)
+      if (data.data && data.data.records) {
+        this.quesDataList = data.data.records
+        this.dataRes = data.data
+      }
     }
   },
   created () {
     this.getCategoryList()
+    this.getList()
+  },
+  watch: {
+    quesDataList: {
+      handler: function (val) {
+        let total = 0
+        for (const item of val) {
+          total = total + item.score
+        }
+        this.formData.total_scores = total
+      }
+    }
   }
 }
 </script>

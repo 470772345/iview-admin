@@ -1,24 +1,6 @@
 <template>
   <div class="subject-list">
-     <Row>
-        <Col span="4" class="left-side">
-        <div class="c-header" >
-          <div>题库类别</div>
-          <div><Button type='primary' @click="addCategoryClick">新增</Button></div>
-          </div>
-        <div :class="['c-item',item.isSelected==true?'selected-color':'']" v-for="item in cList" :key="item.cId" @click="selectClick(item)">{{item.name}}</div>
-        </Col>
-        <Col span="20" class="right-side">
-         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
-        </Col>
-    </Row>
-    <Modal
-        v-model="isShowAddCategory"
-        title="新增分类"
-        @on-ok="addNewCategory()"
-        @on-cancel="cancel">
-        <Input placeholder="请输入分类名称" />
-    </Modal>
+      <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -36,23 +18,6 @@ export default {
         page: 1,
         size: 10
       },
-      isShowAddCategory: false,
-      cList: [
-        {
-          cId: '0',
-          isSelected: true,
-          name: '题库1'
-        },
-        {
-          cId: '1',
-          isSelected: false,
-          name: '题库类别2'
-        },
-        {
-          cId: '2',
-          isSelected: false,
-          name: '题库类别3'
-        }],
       dataList: [],
       columns: [
         {
@@ -78,7 +43,8 @@ export default {
           title: '试题类型',
           width: 90,
           key: 'subjectType',
-          align: 'center'
+          align: 'center',
+          render: (h, params) => h('span', params.row.type === 0 ? '单选题' : '多选题')
         },
         {
           title: '状态',
@@ -137,6 +103,9 @@ export default {
     async getList () {
       const { data } = await getList(this.paramsObj)
       if (data.data && data.data.records) {
+        for (let item of data.data.records) {
+          item.analysis = item.analysis[0]
+        }
         this.dataList = data.data.records
         this.dataRes = data.data
       }
