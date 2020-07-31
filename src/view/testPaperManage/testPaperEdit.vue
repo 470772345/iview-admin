@@ -39,7 +39,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getCategoryList, add } from '@/api/testPaper'
+import { getCategoryList, add, getDetail, update } from '@/api/testPaper'
 import { getList } from '@/api/subject'
 export default {
   name: 'user-edit',
@@ -187,7 +187,6 @@ export default {
     },
     onSelectionChange (selection) {
       console.log('当前选中：', selection)
-      debugger
     },
     // modal 选中的
     onSelection2 (selection) {
@@ -216,23 +215,30 @@ export default {
         if (valid) {
           console.log(this.formData)
           let tempArr = []
-          for (let i = 0; i < this.quesDataList.length; i++) {
-            tempArr.push(this.quesDataList[i].id)
+          for (let i = 0; i < this.selectedQstList.length; i++) {
+            tempArr.push(this.selectedQstList[i].id)
           }
-          this.formData.total_ques = this.quesDataList.length
+          this.formData.total_ques = this.selectedQstList.length
           this.formData.total_scores = this.formData.total_ques * this.formData.single_scores
           this.formData.question_ids = tempArr
-          add(this.formData).then(res => {
-            if (res.data) {
-              this.$Message.success('提交成功!')
-              this.$router.go(-1)
-            }
-          })
+          // 判断是否编辑
+          if (this.$route.params.handleType === 'edit') {
+            update(this.formData).then(res => {
+              if (res) {
+                this.$Message.success('操作成功!')
+                this.$router.go(-1)
+              }
+            })
+          } else {
+            add(this.formData).then(res => {
+              if (res.data) {
+                this.$Message.success('操作成功!')
+                this.$router.go(-1)
+              }
+            })
+          }
         }
       })
-    },
-    handleReset (name) {
-      this.$refs[name].resetFields()
     },
     async getList () {
       const { data } = await getList(this.quesParamsObj)
@@ -245,6 +251,20 @@ export default {
   created () {
     this.getCategoryList()
     this.getList()
+    if (this.$route.params.handleType === 'edit') {
+      this.formData.id = this.$route.params.examination_id
+      let params = {
+        examination_id: this.$route.params.examination_id,
+        show: true,
+        page: 1,
+        size: 1
+      }
+      getDetail(params).then(res => {
+        if (res.data && res.data.data && res.data.data.records) {
+          this.selectedQstList = res.data.data.records
+        }
+      })
+    }
   },
   watch: {
     quesDataList: {

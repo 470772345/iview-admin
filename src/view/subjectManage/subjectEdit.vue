@@ -41,7 +41,7 @@
           <div class="add-btn"> <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button></div>
         </FormItem>
          <FormItem label="题目解析：" >
-            <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/>
+            <Input v-model="formData.analysis.url" type="textarea" :rows="2" placeholder="请输入题目解析"/>
         </FormItem>
         <FormItem>
             <Button type="primary" @click="handleSubmit('formData')">提交</Button>
@@ -61,7 +61,9 @@ export default {
   data () {
     return {
       formData: {
-        analysis: '',
+        analysis: {
+          url: ''
+        },
         score: 2,
         url: '',
         description: '',
@@ -124,15 +126,11 @@ export default {
       this.$refs[name].validate((valid) => {
         if (valid) {
           for (let i = 0; i < this.formData.answers.length; i++) {
-            self.formData.answers[i].url = self.$refs['uploader'][i].getData()
+            if (self.formData.answers[i].url) {
+              self.formData.answers[i].url = self.$refs['uploader'][i].getData()
+            }
           }
           self.formData.url = self.$refs['uploader2'].getData()
-          let tempArr = []
-          if (!Array.isArray(this.formData.analysis)) {
-            tempArr.push(self.formData.analysis)
-            self.formData.analysis = tempArr
-          }
-          debugger
           add(this.formData).then(res => {
             console.log(res)
             this.$Message.success('提交成功!')

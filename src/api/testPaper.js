@@ -8,6 +8,13 @@ export const getList = (info) => {
   })
 }
 
+export const getDetail = (info) => {
+  return axios.request({
+    url: '/system/tExamination/detail',
+    data: info,
+    method: 'post'
+  })
+}
 export const add = (info) => {
   return axios.request({
     url: '/system/tExamination/add',
@@ -18,7 +25,7 @@ export const add = (info) => {
 
 export const update = (info) => {
   return axios.request({
-    url: '/system/tCategoryExamination/delete',
+    url: '/system/tExamination/update',
     data: info,
     method: 'post'
   })

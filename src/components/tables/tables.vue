@@ -243,7 +243,8 @@ export default {
       if (e.target.value === '') this.insideTableData = this.value
     },
     handleSearch () {
-      this.insideTableData = this.value.filter(item => item[this.searchKey].indexOf(this.searchValue) > -1)
+      this.$emit('handleSearch', this.searchValue)
+      // this.insideTableData = this.value.filter(item => item[this.searchKey].indexOf(this.searchValue) > -1)
     },
     handleTableData () {
       this.insideTableData = this.value.map((item, index) => {
@@ -296,7 +297,7 @@ export default {
     },
     value (val) {
       this.handleTableData()
-      this.handleSearch()
+      // this.handleSearch()
     }
   },
   mounted () {

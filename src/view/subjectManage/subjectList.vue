@@ -1,6 +1,6 @@
 <template>
   <div class="subject-list">
-      <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+      <myTable @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -61,6 +61,10 @@ export default {
     }
   },
   methods: {
+    handleSearch (searchVal) {
+      this.paramsObj.name = searchVal
+      this.getList()
+    },
     // 操作分页组件
     handlePager (pager) {
       this.paramsObj.page = pager.current
@@ -103,9 +107,6 @@ export default {
     async getList () {
       const { data } = await getList(this.paramsObj)
       if (data.data && data.data.records) {
-        for (let item of data.data.records) {
-          item.analysis = item.analysis[0]
-        }
         this.dataList = data.data.records
         this.dataRes = data.data
       }

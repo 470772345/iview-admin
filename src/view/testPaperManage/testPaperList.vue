@@ -168,7 +168,7 @@ export default {
         name: 'testPaperEdit',
         params: {
           handleType: 'edit',
-          userObj: row
+          examination_id: row.id
         }
       }
       )
@@ -210,6 +210,9 @@ export default {
       TestPaperApi.getCategoryList(this.categoryListParams).then(data => {
         if (data.data && data.data.data && data.data.data.records) {
           this.categoryList = data.data.data.records
+          this.paramsObj.category_id = this.categoryList[0] && this.categoryList[0].id
+          this.curCategoryId = this.categoryList[0] && this.categoryList[0].id
+          this.getList(this.paramsObj)
         }
       })
     },
@@ -328,7 +331,6 @@ export default {
     }
   },
   created () {
-    this.getList(this.paramsObj)
     this.getCategoryList(this.categoryListParams)
   }
 }
