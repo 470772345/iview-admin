@@ -210,8 +210,10 @@ export default {
       TestPaperApi.getCategoryList(this.categoryListParams).then(data => {
         if (data.data && data.data.data && data.data.data.records) {
           this.categoryList = data.data.data.records
-          this.paramsObj.category_id = this.categoryList[0] && this.categoryList[0].id
-          this.curCategoryId = this.categoryList[0] && this.categoryList[0].id
+          if (!this.curCategoryId) {
+            this.paramsObj.category_id = this.categoryList[0] && this.categoryList[0].id
+            this.curCategoryId = this.categoryList[0] && this.categoryList[0].id
+          }
           this.getList(this.paramsObj)
         }
       })

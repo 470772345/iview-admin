@@ -15,6 +15,15 @@ export const getDetail = (info) => {
     method: 'post'
   })
 }
+
+// 获取试卷内的 问题列表
+export const getQuestions = (info) => {
+  return axios.request({
+    url: '/system/tExamination/questions',
+    data: info,
+    method: 'post'
+  })
+}
 export const add = (info) => {
   return axios.request({
     url: '/system/tExamination/add',

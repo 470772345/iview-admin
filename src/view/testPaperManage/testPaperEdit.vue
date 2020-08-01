@@ -39,7 +39,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getCategoryList, add, getDetail, update } from '@/api/testPaper'
+import { getCategoryList, add, getDetail, update, getQuestions } from '@/api/testPaper'
 import { getList } from '@/api/subject'
 export default {
   name: 'user-edit',
@@ -76,6 +76,12 @@ export default {
         ]
       },
       selectedQstList: [],
+      quesParams: {
+        examination_id: this.$route.params.examination_id,
+        show: true,
+        page: 1,
+        size: 10
+      },
       quesDataList: [],
       selectedCols: [
         {
@@ -248,7 +254,7 @@ export default {
       }
     }
   },
-  created () {
+  async created () {
     this.getCategoryList()
     this.getList()
     if (this.$route.params.handleType === 'edit') {
@@ -259,15 +265,18 @@ export default {
         page: 1,
         size: 1
       }
-      getDetail(params).then(res => {
-        if (res.data && res.data.data && res.data.data.records) {
-          this.selectedQstList = res.data.data.records
-        }
-      })
+      const { data } = await getQuestions(this.quesParams)
+      if (data.data && data.data.records) {
+        this.selectedQstList = data.data.records
+      }
+      const { data: examData } = await getDetail(params)
+      if (examData.data) {
+        this.formData = examData.data
+      }
     }
   },
   watch: {
-    quesDataList: {
+    selectedQstList: {
       handler: function (val) {
         let total = 0
         for (const item of val) {
