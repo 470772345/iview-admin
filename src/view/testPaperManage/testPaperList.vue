@@ -9,13 +9,24 @@
         <div :class="['c-item',item.id==curCategoryId?'selected-color':'']" v-for="item in categoryList" :key="item.id" @click="selectClick(item)">
           <div>{{item.name}}</div>
           <div class="c-btns">
-            <Button  type="primary" shape="circle" icon="ios-create-outline" @click="showCategoryModal('edit',item)"></Button>
-            <Button style="margin-left:10px" type='error' shape="circle" icon="md-close" @click.stop="delCategoryClick(item)"></Button>
+            <Poptip
+              confirm
+              title="删除该分类后,分类下的试卷也会被删除,确定操作吗?"
+              @on-ok="delCategoryClick(item)"
+              @on-cancel="cancel">
+             <Button  type="primary" shape="circle" icon="ios-create-outline" @click="showCategoryModal('edit',item)"></Button>
+             <Button style="margin-left:10px" type='error' shape="circle" icon="md-close"></Button>
+            </Poptip>
           </div>
         </div>
         </Col>
-        <Col span="20" class="right-side">
+        <Col span="20" class="right-side" >
+        <div v-if="categoryList.length>0">
          <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+        </div>
+        <div class="no-tips" v-else>
+          <div>请先添加一个试卷分类~~</div>
+        </div>
         </Col>
     </Row>
     <Modal
@@ -123,13 +134,8 @@ export default {
           align: 'center'
         },
         {
-          title: '试卷总用时',
+          title: '试卷总时长(分钟)',
           key: 'minute_limit',
-          align: 'center'
-        },
-        {
-          title: '状态',
-          key: 'status',
           align: 'center'
         },
         {
@@ -230,13 +236,18 @@ export default {
             this.getCategoryList()
           }
         })
-      } else if (this.handleType === 'edit') {
-
-      } else {}
+      } else if (this.handleCType === 'edit') {
+        TestPaperApi.updateCategory(this.categoryParams).then(data => {
+          if (data.data && data.data.data) {
+            this.$Message.success('操作成功')
+            this.getCategoryList()
+          }
+        })
+      }
     },
     showCategoryModal (handleType, item) {
       if (handleType === 'edit') {
-        this.categoryParams.name = item.name
+        this.categoryParams = JSON.parse(JSON.stringify(item))
         this.handleCType = 'edit'
         this.handleText = '编辑分类'
       } else {
@@ -255,81 +266,28 @@ export default {
       this.getList()
     },
     renderOptions (h, params) {
-      if (params.row.status === 0) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'success',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 1)
-              }
+      return h('div', [
+        h('Poptip', {
+          props: {
+            confirm: true,
+            title: '确定删除此条信息吗?',
+            transfer: true
+          },
+          on: {
+            'on-ok': () => {
+              this.delExam(params.row)
             }
-          }, '启用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delUser(params.row)
-              }
-            }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            }
-          }, '删除')])
-        ])
-      } else if (params.row.status === 1) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'warning',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 0)
-              }
-            }
-          }, '停用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delUser(params.row)
-              }
-            }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            }
-          }, '删除')])
-        ])
-      }
+          }
+        }, [h('Button', {
+          props: {
+            type: 'error',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          }
+        }, '删除')])
+      ])
     }
   },
   created () {
@@ -354,6 +312,14 @@ export default {
  }
  .right-side{
    padding: 10px;
+   .no-tips{
+     display: flex;
+     justify-content: center;
+     color: red;
+     font-size: 20px;
+     align-items: center;
+     margin-top: 200px;
+   }
  }
  .c-item{
    display: flex;
@@ -365,6 +331,19 @@ export default {
    padding-left: 6px;
    border-bottom: solid 1px #eee;
  }
+ .c-item div:nth-child(2){
+   display: none;
+ }
+ .c-item:hover div:nth-child(2){
+   display: block;
+ }
+//  .c-item:hover~.c-btns {
+//    background-color: red;
+//    color: #2d8cf0
+//  }
+  .c-btns{
+    display: flex;
+  }
  .c-item:hover{
    background-color: #edf7ff;
    color: #2d8cf0

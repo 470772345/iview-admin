@@ -7,6 +7,13 @@ export const getUserList = (info) => {
     method: 'post'
   })
 }
+export const getUserDetail = (info) => {
+  return axios.request({
+    url: '/system/tUser/detail',
+    data: info,
+    method: 'post'
+  })
+}
 
 export const addUser = (info) => {
   return axios.request({

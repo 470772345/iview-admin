@@ -24,6 +24,13 @@ export const update = (info) => {
   })
 }
 
+export const getQueDetail = (info) => {
+  return axios.request({
+    url: '/system/tQuestion/detail',
+    data: info,
+    method: 'post'
+  })
+}
 export const delQuestion = (info) => {
   return axios.request({
     url: '/system/tQuestion/delete',

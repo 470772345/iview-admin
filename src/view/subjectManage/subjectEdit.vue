@@ -10,29 +10,30 @@
          <FormItem label="题目分值：">
            <InputNumber :max="100" :min="1" v-model="formData.score"></InputNumber>
         </FormItem>
-        <!-- <FormItem label="题目类型：" >
+        <FormItem label="题目类型：" >
             <Select v-model="formData.type" style="width:200px">
                <Option v-for="item in types" :value="item.value" :key="item.value">{{ item.label }}</Option>
             </Select>
-        </FormItem> -->
+        </FormItem>
         <FormItem  label="题目选项：" >
-          <div class="anwser-item" v-for="(item,index) in formData.answers" :key="item.id">
-             <div class="set-answer"><Checkbox v-model="item.is_true">答案</Checkbox></div>
+          <div class="anwser-item" v-for="(item,index) in formData.answers" :key="item.title">
+            <div>{{item.is_true_number}}</div>
+             <div class="set-answer"><Checkbox v-model="item.is_true_number">答案</Checkbox></div>
              <div>
                <RadioGroup v-model="item.type" vertical>
-                  <Radio label="0">
+                  <Radio label="2">
                       <Icon type="social-apple"></Icon>
                       <span>文本模式</span>
                   </Radio>
-                  <Radio label="2">
+                  <Radio label="0">
                       <Icon type="social-android"></Icon>
                       <span>图片模式</span>
                   </Radio>
               </RadioGroup>
              </div>
-            <Input v-model="item.text" v-if="item.type == '0'" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
-            <div class="img-upload" v-if="item.type == '2'" >
-             <FileUpload ref="uploader" v-model="item.url" isImage :maxLength="1" />
+            <Input v-model="item.text" v-if="item.type == '2'" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
+            <div class="img-upload" v-if="item.type == '0'" >
+             <FileUpload ref="uploader" v-model="item.text" isImage :maxLength="1" />
             </div>
            <div class="del-btn">
             <Button icon="md-close" type="error" size="small" v-if="index>0" @click="delAnwserItem(index)">删除</Button>
@@ -41,7 +42,7 @@
           <div class="add-btn"> <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button></div>
         </FormItem>
          <FormItem label="题目解析：" >
-            <Input v-model="formData.analysis.url" type="textarea" :rows="2" placeholder="请输入题目解析"/>
+            <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/>
         </FormItem>
         <FormItem>
             <Button type="primary" @click="handleSubmit('formData')">提交</Button>
@@ -51,7 +52,7 @@
  </div>
 </template>
 <script>
-import { add } from '@/api/subject'
+import { add, getQueDetail, update } from '@/api/subject'
 import FileUpload from '_c/FileUpload'
 export default {
   name: 'subject-edit', // 题目编辑页,
@@ -61,9 +62,7 @@ export default {
   data () {
     return {
       formData: {
-        analysis: {
-          url: ''
-        },
+        analysis: '',
         score: 2,
         url: '',
         description: '',
@@ -72,11 +71,11 @@ export default {
           {
             'code': '',
             'id': 0,
-            'is_true': true,
+            'is_true': 0,
+            'is_true_number': false,
             'sort': 0,
             'text': '',
-            'type': '0',
-            'url': ''
+            'type': '0'
           }
         ]
       },
@@ -113,7 +112,8 @@ export default {
       let obj = {
         'code': '',
         'id': 0,
-        'is_true': false,
+        'is_true': 0,
+        'is_true__number': false,
         'sort': 0,
         'text': '',
         'type': '0',
@@ -125,23 +125,59 @@ export default {
       const self = this
       this.$refs[name].validate((valid) => {
         if (valid) {
-          for (let i = 0; i < this.formData.answers.length; i++) {
-            if (self.formData.answers[i].url) {
-              self.formData.answers[i].url = self.$refs['uploader'][i].getData()
+          if (this.formData.answers) {
+            let j = -1 // 因为self.$refs有多个,有时是文本,所以下标不能共用
+            for (let i = 0; i < this.formData.answers.length; i++) {
+              self.formData.answers[i].is_true = Number(self.formData.answers[i].is_true_number)
+              if (self.formData.answers[i].type == 0) {
+                console.log('text===')
+                j++
+                self.formData.answers[i].text = self.$refs['uploader'] && self.$refs['uploader'][j] && self.$refs['uploader'][j].getData()
+              }
             }
           }
           self.formData.url = self.$refs['uploader2'].getData()
-          add(this.formData).then(res => {
-            console.log(res)
-            this.$Message.success('提交成功!')
-            this.$router.go(-1)
-          }).catch(verr => {
-            this.$Message.warning('操作失败,请稍后再试!')
-          })
+          if (this.$route.params.handleType === 'edit') {
+            update(this.formData).then(res => {
+              console.log(res)
+              this.$Message.success('操作成功!')
+              this.$router.go(-1)
+            }).catch(verr => {
+              this.$Message.warning('操作失败,请稍后再试!')
+            })
+          } else {
+            add(this.formData).then(res => {
+              console.log(res)
+              this.$Message.success('新增成功!')
+              this.$router.go(-1)
+            }).catch(verr => {
+              this.$Message.warning('操作失败,请稍后再试!')
+            })
+          }
+        }
+      })
+    }
+  },
+  created () {
+    if (this.$route.params.handleType === 'edit') {
+      this.formData.id = this.$route.params.question_id
+      let quesObj = {
+        question_id: this.$route.params.question_id
+      }
+      getQueDetail(quesObj).then(res => {
+        if (res.data && res.data && res.data.data) {
+          if (res.data.data.answers && res.data.data.answers.length > 0) {
+            for (let item of res.data.data.answers) {
+              item.type = item.type + ''
+              item.is_true_number = Boolean(item.is_true)
+            }
+          }
+          this.formData = res.data.data
         }
       })
     }
   }
+
 }
 </script>
 

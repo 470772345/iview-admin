@@ -30,13 +30,7 @@ export default {
         {
           title: '解析',
           key: 'analysis',
-          width: 300,
-          align: 'center'
-        },
-        {
-          title: '标准答案',
-          key: 'answer',
-          width: 90,
+          width: 400,
           align: 'center'
         },
         {
@@ -45,11 +39,6 @@ export default {
           key: 'subjectType',
           align: 'center',
           render: (h, params) => h('span', params.row.type === 0 ? '单选题' : '多选题')
-        },
-        {
-          title: '状态',
-          key: 'status',
-          align: 'center'
         },
         {
           title: '操作',
@@ -87,7 +76,7 @@ export default {
         name: 'subjectEdit',
         params: {
           handleType: 'edit',
-          userObj: row
+          question_id: row.id
         }
       }
       )
@@ -136,81 +125,28 @@ export default {
       console.log(item.name)
     },
     renderOptions (h, params) {
-      if (params.row.status === 0) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'success',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 1)
-              }
+      return h('div', [
+        h('Poptip', {
+          props: {
+            confirm: true,
+            title: '确定删除此条信息吗?',
+            transfer: true
+          },
+          on: {
+            'on-ok': () => {
+              this.delQuestion(params.row)
             }
-          }, '启用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delQuestion(params.row)
-              }
-            }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            }
-          }, '删除')])
-        ])
-      } else if (params.row.status === 1) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'warning',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 0)
-              }
-            }
-          }, '停用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delQuestion(params.row)
-              }
-            }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            }
-          }, '删除')])
-        ])
-      }
+          }
+        }, [h('Button', {
+          props: {
+            type: 'error',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          }
+        }, '删除')])
+      ])
     }
   },
   created () {

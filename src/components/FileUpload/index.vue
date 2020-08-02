@@ -4,7 +4,7 @@
         <div class="image-block" v-for="(item,index) in fileList" :key="index" >
             <!-- <div class="image-block"> -->
             <template v-if="item.status === 'finished'">
-                <img :src="item.url.data | pathFilter" :onerror="errorImg" class="preview-img">
+                <img :src="item.url | pathFilter" :onerror="errorImg" class="preview-img">
                 <div class="action-mask">
                     <!-- <Icon type="ios-eye-outline" size="20" style="margin-right:3px;" @click="$preview.open(index,previewList)"></Icon> -->
                     <Icon type="ios-trash-outline" size="20" @click.native="handleDelete(item)" v-if="!readonly"></Icon>
@@ -314,7 +314,7 @@ export default {
     getData () {
       const temp = []
       this.fileList.forEach(v => {
-        v.url && v.url.data && temp.push(v.url.data)
+        /^http?/.test(v.url) ? temp.push(v.url) : temp.push(v.url.data)
       })
       const result = temp.join(',')
       return result
@@ -346,7 +346,8 @@ export default {
   // components: { VueCropper },
   filters: {
     pathFilter: function (input) {
-      return /^https?/.test(input) ? input : 'http://120.77.211.97/' + input
+      debugger
+      return /^http?/.test(input.data) ? input.data : input
     }
   },
   watch: {

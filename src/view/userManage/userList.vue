@@ -1,6 +1,6 @@
 <template>
   <div class="user-list">
-   <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+   <myTable @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -34,12 +34,13 @@ export default {
           title: '用户名称',
           key: 'name',
           align: 'center',
-          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.name}</a>)
+          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.name || '匿名'}</a>)
         },
         {
           title: '性别',
           key: 'sex',
-          align: 'center'
+          align: 'center',
+          render: (h, params) => h('span', params.row.sex === 1 ? '男' : '女')
         },
         {
           title: '年龄',
@@ -72,6 +73,10 @@ export default {
     }
   },
   methods: {
+    handleSearch (searchVal) {
+      this.paramsObj.name = searchVal
+      this.getList()
+    },
     // 操作分页组件
     handlePager (pager) {
       this.paramsObj.page = pager.current

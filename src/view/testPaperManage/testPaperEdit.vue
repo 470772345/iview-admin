@@ -2,10 +2,10 @@
 <div class="user-edit">
     <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="95" style="width:90%">
         <FormItem label="试卷名称" prop="title">
-            <Input class="input-width" v-model="formData.title" placeholder="请输入试卷名称" />
+            <Input class="input-width" :maxlength="maxLen" v-model="formData.title" placeholder="请输入试卷名称" />
         </FormItem>
-        <FormItem label="试卷总用时" >
-           <InputNumber :max="200" :min="1" v-model="formData.minute_limit"></InputNumber>
+        <FormItem label="试卷总时长" >
+           <InputNumber :max="200" :min="1" v-model="formData.minute_limit"></InputNumber><span> (分钟)</span>
         </FormItem>
         <FormItem label="试卷总分" prop="single_scores">
             <Input class="input-width" disabled  v-model="formData.total_scores" placeholder="试卷总分" />
@@ -33,7 +33,9 @@
         title="选择题目"
         @on-ok="commitSelect()"
         @on-cancel="cancel">
-        <myTable :searchable='true' :columns='columns' :value='quesDataList' :border='true' :enableAdd='false' @on-selection-change="onSelection2" ></myTable>
+        <myTable :searchable='true'  @handlePager="handlePager" :dataRes="dataRes"
+        :columns='columns' :value='quesDataList' :border='true' :enableAdd='false'
+        @on-selection-change="onSelection2" ></myTable>
     </Modal>
  </div>
 </template>
@@ -45,7 +47,17 @@ export default {
   name: 'user-edit',
   data () {
     return {
+      dataRes: {},
+      maxLen: 20,
       seletcedOnModalList: [],
+      // 获取试卷内的题目列表
+      quesParams: {
+        examination_id: this.$route.params.examination_id,
+        show: true,
+        page: 1,
+        size: 10
+      },
+      // 获取modal 题库列表
       quesParamsObj: {
         page: 1,
         size: 10
@@ -76,12 +88,6 @@ export default {
         ]
       },
       selectedQstList: [],
-      quesParams: {
-        examination_id: this.$route.params.examination_id,
-        show: true,
-        page: 1,
-        size: 10
-      },
       quesDataList: [],
       selectedCols: [
         {
@@ -156,12 +162,6 @@ export default {
           align: 'center'
         },
         {
-          title: '标准答案',
-          key: 'answer',
-          width: 90,
-          align: 'center'
-        },
-        {
           title: '试题类型',
           width: 90,
           key: 'subjectType',
@@ -179,9 +179,24 @@ export default {
     myTable
   },
   methods: {
+    unique (arr) {
+      console.log(arr, '-----------')
+      console.log(Array.from(new Set(arr)))
+      return Array.from(new Set(arr))
+    },
+    // 操作分页组件
+    handlePager (pager) {
+      this.quesParamsObj.page = pager.current
+      this.quesParamsObj.size = pager.size
+      this.getList()
+    },
     commitSelect () {
       console.log('选中的题目')
-      this.selectedQstList = this.seletcedOnModalList
+      if (this.selectedQstList && this.selectedQstList.length > 0) {
+        this.selectedQstList = this.selectedQstList.concat(this.selectedQstList)
+      } else {
+        this.selectedQstList = this.seletcedOnModalList
+      }
     },
     getCategoryList () {
       getCategoryList(this.categoryListParams).then(data => {
@@ -252,6 +267,12 @@ export default {
         this.quesDataList = data.data.records
         this.dataRes = data.data
       }
+    },
+    async getQuestions () {
+      const { data } = await getQuestions(this.quesParams)
+      if (data.data && data.data.records) {
+        this.selectedQstList = data.data.records
+      }
     }
   },
   async created () {
@@ -265,10 +286,7 @@ export default {
         page: 1,
         size: 1
       }
-      const { data } = await getQuestions(this.quesParams)
-      if (data.data && data.data.records) {
-        this.selectedQstList = data.data.records
-      }
+      this.getQuestions()
       const { data: examData } = await getDetail(params)
       if (examData.data) {
         this.formData = examData.data
