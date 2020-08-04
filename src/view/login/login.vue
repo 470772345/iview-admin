@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import md5 from 'js-md5'
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
 export default {
@@ -27,13 +28,22 @@ export default {
       'handleLogin',
       'getUserInfo'
     ]),
-    handleSubmit ({ userName, password }) {
-      this.handleLogin({ userName, password }).then(res => {
-        this.getUserInfo().then(res => {
+    handleSubmit ({ name, password }) {
+      const yan = '02j9em'
+      password = md5(yan + password).toUpperCase()
+      this.handleLogin({ name, password }).then(res => {
+        if (res.token) {
           this.$router.push({
             name: this.$config.homeName
           })
-        })
+        }
+        // this.getUserInfo().then(res => {
+        //   this.$router.push({
+        //     name: this.$config.homeName
+        //   })
+        // })
+      }).catch(err => {
+        this.$Message.warning(err)
       })
     }
   }

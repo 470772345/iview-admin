@@ -22,7 +22,7 @@
         </Col>
         <Col span="20" class="right-side" >
         <div v-if="categoryList.length>0">
-         <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+         <myTable  @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
         </div>
         <div class="no-tips" v-else>
           <div>请先添加一个试卷分类~~</div>
@@ -42,7 +42,7 @@
         title="题目列表"
         @on-ok="QutClick()"
         @on-cancel="cancel">
-        <myTable :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
+        <myTable  :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
     </Modal>
   </div>
 </template>
@@ -72,6 +72,7 @@ export default {
       },
       dataRes: {},
       paramsObj: {
+        name: '',
         category_id: 0,
         page: 1,
         size: 10
@@ -152,6 +153,10 @@ export default {
     Pager
   },
   methods: {
+    handleSearch (searchVal) {
+      this.paramsObj.name = searchVal
+      this.getList()
+    },
     // 操作分页组件
     handlePager (pager) {
       this.paramsObj.page = pager.current

@@ -25,6 +25,7 @@ const turnTo = (to, access, next) => {
 }
 
 router.beforeEach((to, from, next) => {
+  debugger
   iView.LoadingBar.start()
   const token = getToken()
   if (!token && to.name !== LOGIN_PAGE_NAME) {
@@ -41,19 +42,22 @@ router.beforeEach((to, from, next) => {
       name: homeName // 跳转到homeName页
     })
   } else {
-    if (store.state.user.hasGetInfo) {
+    if (token && from.name === LOGIN_PAGE_NAME) {
       turnTo(to, store.state.user.access, next)
-    } else {
-      store.dispatch('getUserInfo').then(user => {
-        // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        turnTo(to, user.access, next)
-      }).catch(() => {
-        setToken('')
-        next({
-          name: 'login'
-        })
-      })
     }
+    // if (store.state.user.hasGetInfo) {
+    //   turnTo(to, store.state.user.access, next)
+    // } else {
+    //   store.dispatch('getUserInfo').then(user => {
+    //     // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
+    //     turnTo(to, user.access, next)
+    //   }).catch(() => {
+    //     setToken('')
+    //     next({
+    //       name: 'login'
+    //     })
+    //   })
+    // }
   }
 })
 
