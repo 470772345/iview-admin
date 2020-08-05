@@ -40,10 +40,13 @@ export default {
       obj.password = password
       return new Promise((resolve, reject) => {
         login(obj).then(res => {
-          debugger
-          const data = res.data.data
-          commit('setToken', data.token)
-          resolve(data)
+          const { data, code, err_msg } = res.data
+          if (code === 2) {
+            resolve(err_msg)
+          } else {
+            commit('setToken', data.token)
+            resolve(data)
+          }
         }).catch(err => {
           reject(err)
         })

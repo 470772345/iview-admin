@@ -5,7 +5,7 @@
             <Input v-model="formData.name" placeholder="请输入用户名称" ></Input>
         </FormItem>
         <FormItem label="年龄" prop="age">
-            <Input v-model="formData.age" placeholder="请输入年龄"></Input>
+            <InputNumber :max="150" :min="1" v-model="formData.age"></InputNumber>
         </FormItem>
          <FormItem label="年级" prop="grade">
             <Input v-model="formData.grade" placeholder="请输入年级"></Input>
@@ -14,7 +14,16 @@
             <Input v-model="formData.phone" placeholder="请输入手机号"></Input>
         </FormItem>
         <FormItem label="密码" prop="password">
-            <Input type="password" v-model="formData.password" placeholder="请输入密码"></Input>
+          <Row>
+            <Col span="16" class="left-side" >
+              <Input type="password" disabled v-model="formData.password" placeholder="请输入密码" />
+            </Col>
+          <Col span="4" class="left-side" >
+            <Tooltip content="重置初始密码: 888888" placement="top">
+               <Button style="margin-left:10px" @click="resetPsw">重置密码</Button>
+            </Tooltip>
+            </Col>
+        </Row>
         </FormItem>
         <FormItem label="性别" prop="sex">
             <RadioGroup v-model="formData.sex">
@@ -31,6 +40,7 @@
 </template>
 <script>
 import * as User from '@/api/data'
+import md5 from 'js-md5'
 export default {
   name: 'user-edit',
   data () {
@@ -42,7 +52,7 @@ export default {
         name: '',
         password: '',
         phone: '',
-        sex: 0,
+        sex: '0',
         status: 0
       },
       ruleValidate: {
@@ -73,6 +83,11 @@ export default {
     }
   },
   methods: {
+    resetPsw () {
+      const yan = '02j9em'
+      this.formData.password = md5(yan + '888888').toUpperCase()
+      this.$Message.success('已重置,提交保存后生效~~')
+    },
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
@@ -101,6 +116,7 @@ export default {
       User.getUserDetail(userObj).then(res => {
         if (res && res.data && res.data.data) {
           this.formData = res.data.data
+          this.formData.sex = '' + this.formData.sex
         }
       })
     }

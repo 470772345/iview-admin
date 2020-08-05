@@ -25,7 +25,6 @@ const turnTo = (to, access, next) => {
 }
 
 router.beforeEach((to, from, next) => {
-  debugger
   iView.LoadingBar.start()
   const token = getToken()
   if (!token && to.name !== LOGIN_PAGE_NAME) {
@@ -44,6 +43,8 @@ router.beforeEach((to, from, next) => {
   } else {
     if (token && from.name === LOGIN_PAGE_NAME) {
       turnTo(to, store.state.user.access, next)
+    } else {
+      next()
     }
     // if (store.state.user.hasGetInfo) {
     //   turnTo(to, store.state.user.access, next)

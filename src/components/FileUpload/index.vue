@@ -346,7 +346,6 @@ export default {
   // components: { VueCropper },
   filters: {
     pathFilter: function (input) {
-      debugger
       return /^http?/.test(input.data) ? input.data : input
     }
   },

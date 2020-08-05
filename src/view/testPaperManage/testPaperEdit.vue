@@ -105,20 +105,13 @@ export default {
         {
           title: '试题内容',
           key: 'description',
-          width: 360,
-          align: 'center'
-        },
-        {
-          title: '标准答案',
-          key: 'answer',
-          width: 90,
           align: 'center'
         },
         {
           title: '试题类型',
-          width: 90,
-          key: 'subjectType',
-          align: 'center'
+          key: 'type',
+          align: 'center',
+          render: (h, params) => (<span>{params.row.type === 0 ? '单选题' : '多选题'}</span>)
         },
         {
           title: '操作',
@@ -158,19 +151,13 @@ export default {
         {
           title: '试题内容',
           key: 'description',
-          width: 360,
           align: 'center'
         },
         {
           title: '试题类型',
-          width: 90,
-          key: 'subjectType',
-          align: 'center'
-        },
-        {
-          title: '状态',
-          key: 'status',
-          align: 'center'
+          key: 'type',
+          align: 'center',
+          render: (h, params) => (<span>{params.row.type === 0 ? '单选题' : '多选题'}</span>)
         }
       ]
     }

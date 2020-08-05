@@ -36,14 +36,6 @@
         @on-cancel="cancel">
         <Input placeholder="请输入分类名称(最多8位)" :maxlength="maxLen" v-model="categoryParams.name" />
     </Modal>
-    <Modal
-        width="60%"
-        v-model="isShowQutList"
-        title="题目列表"
-        @on-ok="QutClick()"
-        @on-cancel="cancel">
-        <myTable  :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='qutListCols' :value='qutDataList' :border='true' @on-selection-change="selectQutClick"></myTable>
-    </Modal>
   </div>
 </template>
 <script>
@@ -81,35 +73,6 @@ export default {
       isShowAddCategory: false,
       qutDataList: [], // 题目列表
       dataList: [],
-      qutListCols: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: '试题内容',
-          key: 'content',
-          width: 300,
-          align: 'center'
-        },
-        {
-          title: '解析',
-          key: 'analysis',
-          width: 300,
-          align: 'center'
-        },
-        {
-          title: '标准答案',
-          key: 'answer',
-          align: 'center'
-        },
-        {
-          title: '试题类型',
-          key: 'subjectType',
-          align: 'center'
-        }
-      ],
       columns: [
         {
           title: '序号',

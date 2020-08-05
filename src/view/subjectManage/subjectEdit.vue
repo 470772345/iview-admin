@@ -17,8 +17,7 @@
         </FormItem>
         <FormItem  label="题目选项：" >
           <div class="anwser-item" v-for="(item,index) in formData.answers" :key="item.title">
-            <div>{{item.is_true_number}}</div>
-             <div class="set-answer"><Checkbox v-model="item.is_true_number">答案</Checkbox></div>
+             <div class="set-answer"><Checkbox v-model="item.is_true">答案</Checkbox></div>
              <div>
                <RadioGroup v-model="item.type" vertical>
                   <Radio label="2">
@@ -71,8 +70,7 @@ export default {
           {
             'code': '',
             'id': 0,
-            'is_true': 0,
-            'is_true_number': false,
+            'is_true': false,
             'sort': 0,
             'text': '',
             'type': '0'
@@ -112,8 +110,7 @@ export default {
       let obj = {
         'code': '',
         'id': 0,
-        'is_true': 0,
-        'is_true__number': false,
+        'is_true': false,
         'sort': 0,
         'text': '',
         'type': '0',
@@ -128,7 +125,6 @@ export default {
           if (this.formData.answers) {
             let j = -1 // 因为self.$refs有多个,有时是文本,所以下标不能共用
             for (let i = 0; i < this.formData.answers.length; i++) {
-              self.formData.answers[i].is_true = Number(self.formData.answers[i].is_true_number)
               if (self.formData.answers[i].type == 0) {
                 console.log('text===')
                 j++
@@ -169,7 +165,6 @@ export default {
           if (res.data.data.answers && res.data.data.answers.length > 0) {
             for (let item of res.data.data.answers) {
               item.type = item.type + ''
-              item.is_true_number = Boolean(item.is_true)
             }
           }
           this.formData = res.data.data

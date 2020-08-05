@@ -36,6 +36,8 @@ export default {
           this.$router.push({
             name: this.$config.homeName
           })
+        } else {
+          this.$Message.warning(res)
         }
         // this.getUserInfo().then(res => {
         //   this.$router.push({
