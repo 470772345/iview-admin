@@ -4,8 +4,15 @@
       <!-- <Select v-model="searchKey" class="search-col">
         <Option v-for="item in columns" v-if="item.key !== 'handle'" :value="item.key" :key="`search-col-${item.key}`">{{ item.title }}</Option>
       </Select> -->
-      <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
-      <Button @click="handleSearch" class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
+      <div class="header-btns">
+          <div class="add-btn" v-if="enableAdd">
+          <Button class="search-btn" type="primary" style="margin:10px 0" @click="addClick('add')"><Icon type="search"/>新增</Button>
+          </div>
+          <div class="search-btn">
+            <Input @on-change="handleClear" clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
+            <Button @click="handleSearch" class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
+          </div>
+      </div>
     </div>
     <Table
       ref="tablesMain"
@@ -45,10 +52,7 @@
       <Input placeholder="输入关键字搜索" class="search-input" v-model="searchValue"/>
       <Button class="search-btn" type="primary"><Icon type="search"/>&nbsp;&nbsp;搜索</Button>
     </div>
-    <div class="add-btn" v-if="enableAdd">
-    <Button class="search-btn" type="primary" style="margin:10px 0" @click="addClick('add')"><Icon type="search"/>新增</Button>
-    </div>
-    <Pager :config="dataRes" @on-change="handlePager" v-if="hasPager"></Pager>
+    <Pager style="margin-top:10px" :config="dataRes" @on-change="handlePager" v-if="hasPager"></Pager>
     <a id="hrefToExportTable" style="display: none;width: 0px;height: 0px;"></a>
   </div>
 </template>
@@ -309,9 +313,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.add-btn{
-  display:flex;
-  justify-content: center;
-  margin-top: 10px;
+.header-btns{
+ display: flex;
+ justify-content: space-between;
 }
 </style>

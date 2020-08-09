@@ -22,11 +22,11 @@
                <RadioGroup v-model="item.type" vertical>
                   <Radio label="2">
                       <Icon type="social-apple"></Icon>
-                      <span>文本模式</span>
+                      <span>文本</span>
                   </Radio>
                   <Radio label="0">
                       <Icon type="social-android"></Icon>
-                      <span>图片模式</span>
+                      <span>图片</span>
                   </Radio>
               </RadioGroup>
              </div>

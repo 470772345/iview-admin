@@ -40,7 +40,7 @@ export default {
           title: '性别',
           key: 'sex',
           align: 'center',
-          render: (h, params) => h('span', params.row.sex === 1 ? '男' : '女')
+          render: (h, params) => h('span', params.row.sex === 0 ? '男' : '女')
         },
         {
           title: '年龄',
@@ -66,6 +66,7 @@ export default {
         {
           title: '操作',
           key: 'actor',
+          width: 200,
           align: 'center',
           render: (h, params) => this.renderOptions(h, params)
         }
@@ -75,6 +76,7 @@ export default {
   methods: {
     handleSearch (searchVal) {
       this.paramsObj.name = searchVal
+      this.paramsObj.page = 1
       this.getList()
     },
     // 操作分页组件
@@ -126,81 +128,56 @@ export default {
       console.log(data)
     },
     renderOptions (h, params) {
-      if (params.row.status === 0) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'success',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 1)
-              }
+      return h('div', [
+        h('Button', {
+          props: {
+            type: 'primary',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.edit(params.row)
             }
-          }, '启用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delUser(params.row)
-              }
+          }
+        }, '编辑'),
+        h('Button', {
+          props: {
+            type: params.row.status === 0 ? 'success' : 'warning',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.updateStatus(params.row, params.row.status === 0 ? 1 : 0)
             }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
+          }
+        }, params.row.status === 0 ? '启用' : '停用'),
+        h('Poptip', {
+          props: {
+            confirm: true,
+            title: '确定删除此条信息吗?',
+            transfer: true
+          },
+          on: {
+            'on-ok': () => {
+              this.delUser(params.row)
             }
-          }, '删除')])
-        ])
-      } else if (params.row.status === 1) {
-        return h('div', [
-          h('Button', {
-            props: {
-              type: 'warning',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            },
-            on: {
-              click: () => {
-                this.updateStatus(params.row, 0)
-              }
-            }
-          }, '停用'),
-          h('Poptip', {
-            props: {
-              confirm: true,
-              title: '确定删除此条信息吗?',
-              transfer: true
-            },
-            on: {
-              'on-ok': () => {
-                this.delUser(params.row)
-              }
-            }
-          }, [h('Button', {
-            props: {
-              type: 'error',
-              size: 'small'
-            },
-            style: {
-              marginRight: '5px'
-            }
-          }, '删除')])
-        ])
-      }
+          }
+        }, [h('Button', {
+          props: {
+            type: 'error',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          }
+        }, '删除')])
+      ])
     }
   },
   created () {

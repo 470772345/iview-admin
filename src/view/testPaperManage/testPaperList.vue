@@ -118,6 +118,7 @@ export default {
   methods: {
     handleSearch (searchVal) {
       this.paramsObj.name = searchVal
+      this.paramsObj.page = 1
       this.getList()
     },
     // 操作分页组件
@@ -235,6 +236,20 @@ export default {
     },
     renderOptions (h, params) {
       return h('div', [
+        h('Button', {
+          props: {
+            type: 'primary',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.edit(params.row)
+            }
+          }
+        }, '编辑'),
         h('Poptip', {
           props: {
             confirm: true,

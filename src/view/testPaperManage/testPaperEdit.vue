@@ -47,6 +47,7 @@ export default {
   name: 'user-edit',
   data () {
     return {
+      selectIds: [],
       dataRes: {},
       maxLen: 20,
       seletcedOnModalList: [],
@@ -55,7 +56,7 @@ export default {
         examination_id: this.$route.params.examination_id,
         show: true,
         page: 1,
-        size: 10
+        size: 1000
       },
       // 获取modal 题库列表
       quesParamsObj: {
@@ -167,9 +168,17 @@ export default {
   },
   methods: {
     unique (arr) {
-      console.log(arr, '-----------')
-      console.log(Array.from(new Set(arr)))
-      return Array.from(new Set(arr))
+      let hashObj = {}
+      let uniArr = arr.reduce((cur, next) => {
+        console.log(cur, 'cur')
+        console.log(next, 'next')
+        console.log(next.id, 'next.id')
+        hashObj[next.id] ? '' : (hashObj[next.id] = true && cur.push(next))
+        console.log(hashObj)
+        console.log('1111', cur)
+        return cur
+      }, [])
+      return uniArr
     },
     // 操作分页组件
     handlePager (pager) {
@@ -180,7 +189,7 @@ export default {
     commitSelect () {
       console.log('选中的题目')
       if (this.selectedQstList && this.selectedQstList.length > 0) {
-        this.selectedQstList = this.selectedQstList.concat(this.selectedQstList)
+        this.selectedQstList = this.unique(this.selectedQstList.concat(this.seletcedOnModalList))
       } else {
         this.selectedQstList = this.seletcedOnModalList
       }
@@ -195,6 +204,7 @@ export default {
     },
     onSelectionChange (selection) {
       console.log('当前选中：', selection)
+      this.selectIds = selection
     },
     // modal 选中的
     onSelection2 (selection) {
@@ -205,6 +215,16 @@ export default {
     },
     delQuestion () {
       console.log('批量删除')
+      for (let i = 0, j = 0; i < this.selectedQstList.length; i++) {
+        if (j === this.selectIds.length) {
+          break
+        }
+        if (this.selectedQstList[i].id === this.selectIds[j].id) {
+          j++
+          this.selectedQstList.splice(i, 1)
+          i = 0
+        }
+      }
     },
     delHasSelectdQ (id) {
       for (let i = 0; i < this.selectedQstList.length; i++) {
@@ -221,6 +241,10 @@ export default {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
+          if (this.selectedQstList.length === 0) {
+            this.$Message.warning('请选择题目~')
+            return
+          }
           console.log(this.formData)
           let tempArr = []
           for (let i = 0; i < this.selectedQstList.length; i++) {
