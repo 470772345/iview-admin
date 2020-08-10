@@ -53,5 +53,7 @@ export default {
 </script>
 
 <style>
-
+.login-con{
+  right: 40%;
+}
 </style>
