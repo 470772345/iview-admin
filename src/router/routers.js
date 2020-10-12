@@ -141,6 +141,36 @@ export default [
     ]
   },
   {
+    path: '/auditManage',
+    name: 'auditManage',
+    meta: {
+      icon: 'md-card',
+      title: '审核管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'auditList',
+        name: 'auditList',
+        meta: {
+          icon: 'md-card',
+          title: '审核列表'
+        },
+        component: () => import('@/view/auditManage/auditList.vue')
+      },
+      {
+        path: 'testPaperEdit',
+        name: 'testPaperEdit',
+        meta: {
+          hideInMenu: true,
+          icon: 'md-person',
+          title: '试卷编辑'
+        },
+        component: () => import('@/view/auditManage/auditList.vue')
+      }
+    ]
+  },
+  {
     path: '/401',
     name: 'error_401',
     meta: {
