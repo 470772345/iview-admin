@@ -1,6 +1,6 @@
 <template>
   <div class="subject-list">
-      <myTable @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+      <myTable @handleSearch="handleSearch" :enableAdd='false' :searchable='false' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -25,20 +25,28 @@ export default {
           key: 'description',
           width: 300,
           align: 'center',
-          render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.description}</a>)
+          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
         },
         {
-          title: '解析',
+          title: '选项',
           key: 'analysis',
           width: 400,
-          align: 'center'
+          align: 'center',
+          render: (h, params) => this.renderOptions2(h, params)
         },
         {
-          title: '试题类型',
+          title: '审核状态',
           width: 90,
           key: 'subjectType',
           align: 'center',
-          render: (h, params) => h('span', params.row.type === 0 ? '单选题' : '多选题')
+          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
+        },
+        {
+          title: '解题音频',
+          width: 90,
+          key: 'mp3',
+          align: 'center',
+          render: (h, params) => this.renderMp3Ele(h, params)
         },
         {
           title: '操作',
@@ -73,14 +81,8 @@ export default {
       }
     },
     edit (row) {
-      this.$router.push({
-        name: 'subjectEdit',
-        params: {
-          handleType: 'edit',
-          question_id: row.id
-        }
-      }
-      )
+      console.log('审核通过')
+      // 刷新列表
     },
     delQuestion (obj) {
       delQuestion(obj).then(res => {
@@ -125,6 +127,94 @@ export default {
       })
       console.log(item.name)
     },
+    playMp3 (value) {
+      let id = value.row.id
+      let i = document.getElementById(id).nextElementSibling
+      let au = document.getElementById(id)
+      let endTime = au.duration
+      if (au.dataset.flag === 'true') {
+        au.play()
+        i.textContent = '暂停'
+        i.style.cssText = 'color:red;font-style:normal;cursor:pointer'
+        au.dataset.flag = false
+      } else {
+        au.pause()
+        i.textContent = '播放'
+        i.style.cssText = 'color:#2d8cf0;font-style:normal;cursor:pointer'
+        au.dataset.flag = true
+      }
+      var interval = setInterval(function () {
+        if (au.currentTime === endTime) {
+          i.textContent = '播放'
+          i.style.cssText = 'color:#2d8cf0;font-style:normal;cursor:pointer'
+          au.dataset.flag = true
+          clearInterval(interval)
+        }
+      }, 1000)
+    },
+    renderMp3Ele (h, params) {
+      return h('div', {
+        style: {
+
+        }
+      }, [
+        h('audio', {
+          style: {
+            textAlign: 'center',
+            padding: '4px',
+            width: '100px'
+          },
+          attrs: {
+            src: 'http://ai.foxcall.cn' + params.row.recordUrl,
+            id: params.row.id,
+            'data-flag': true
+          }
+        }, params.row.recordUrl),
+        h('i', {
+          style: {
+            'font-style': 'normal',
+            'color': '#2d8cf0',
+            'cursor': 'pointer'
+          },
+          on: {
+            click: () => {
+              this.playMp3(params)
+            }
+          }
+        }, '播放')
+        // h('a', {
+        //   'style': {
+        //     'color': '#2d8cf0',
+        //     'cursor': 'pointer',
+        //     'margin': '0 2px'
+        //   },
+        //   attrs: {
+        //     href: 'http://ai.foxcall.cn' + params.row.recordUrl
+        //   }
+        // }, '下载')
+      ])
+    },
+    renderOptions2 (h, params) {
+      let arr = params.row.groupColor || ['red', 'yellow']
+      return h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }
+        },
+        arr.map((item, inde) => {
+          return h('div', {
+            style: {
+              borderRadius: '50%',
+              marginRight: '10px'
+            }
+          }, `A选项${item}  `)
+        })
+      )
+    },
     renderOptions (h, params) {
       return h('div', [
         h('Button', {
@@ -140,7 +230,7 @@ export default {
               this.edit(params.row)
             }
           }
-        }, '编辑'),
+        }, '审核通过'),
         h('Poptip', {
           props: {
             confirm: true,
@@ -160,7 +250,7 @@ export default {
           style: {
             marginRight: '5px'
           }
-        }, '删除')])
+        }, '退回')])
       ])
     }
   },

@@ -145,7 +145,7 @@ export default [
     name: 'auditManage',
     meta: {
       icon: 'md-card',
-      title: '审核管理'
+      title: '解题审核'
     },
     component: Main,
     children: [
@@ -154,17 +154,7 @@ export default [
         name: 'auditList',
         meta: {
           icon: 'md-card',
-          title: '审核列表'
-        },
-        component: () => import('@/view/auditManage/auditList.vue')
-      },
-      {
-        path: 'testPaperEdit',
-        name: 'testPaperEdit',
-        meta: {
-          hideInMenu: true,
-          icon: 'md-person',
-          title: '试卷编辑'
+          title: '解题审核'
         },
         component: () => import('@/view/auditManage/auditList.vue')
       }
