@@ -13,6 +13,7 @@ export default {
   },
   data () {
     return {
+      preMp3Ids: '',
       dataRes: {},
       paramsObj: {
         page: 1,
@@ -35,11 +36,11 @@ export default {
           render: (h, params) => this.renderOptions2(h, params)
         },
         {
-          title: '审核状态',
+          title: '提交人',
           width: 90,
-          key: 'subjectType',
+          key: 'stuName',
           align: 'center',
-          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
+          render: (h, params) => h('span', '张三李四')
         },
         {
           title: '解题音频',
@@ -47,6 +48,13 @@ export default {
           key: 'mp3',
           align: 'center',
           render: (h, params) => this.renderMp3Ele(h, params)
+        },
+        {
+          title: '审核状态',
+          width: 90,
+          key: 'subjectType',
+          align: 'center',
+          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
         },
         {
           title: '操作',
@@ -128,11 +136,22 @@ export default {
       console.log(item.name)
     },
     playMp3 (value) {
+      debugger
       let id = value.row.id
       let i = document.getElementById(id).nextElementSibling
       let au = document.getElementById(id)
       let endTime = au.duration
       if (au.dataset.flag === 'true') {
+        if (this.preMp3Ids !== id && this.preMp3Ids) {
+          let preId = this.preMp3Ids
+          let preAu = document.getElementById(preId)
+          let preEle = document.getElementById(preId).nextElementSibling
+          preEle.textContent = '播放'
+          preEle.style.cssText = 'color:#333333;font-style:normal;cursor:pointer'
+          preAu.dataset.flag = false
+          preAu.pause()
+        }
+        this.preMp3Ids = id
         au.play()
         i.textContent = '暂停'
         i.style.cssText = 'color:red;font-style:normal;cursor:pointer'
@@ -165,7 +184,8 @@ export default {
             width: '100px'
           },
           attrs: {
-            src: 'http://ai.foxcall.cn' + params.row.recordUrl,
+            // src: 'http://ai.foxcall.cn' + params.row.recordUrl,
+            src: 'http://120.77.211.97:80/common/uploadFile/20201014/91e21b7318c44d339e59442ee32df6a9.mp3',
             id: params.row.id,
             'data-flag': true
           }

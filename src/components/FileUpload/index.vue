@@ -271,7 +271,7 @@ export default {
       const check = this.filesLength <= this.maxLength
       if (!check) {
         this.$Notice.warning({
-          title: `sorry, 文件数量最多为 ${this.maxLength}`
+          title: `文件数量最多为 ${this.maxLength}`
         })
         this.filesLength--
       }

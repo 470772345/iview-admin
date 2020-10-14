@@ -41,7 +41,8 @@
           <div class="add-btn"> <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button></div>
         </FormItem>
          <FormItem label="题目解析：" >
-            <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/>
+            <!-- <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/> -->
+            <FileUpload ref="uploader3" v-model="MP3List" :isImage='false' :maxLength="5" :maxSize ='2048*5' />
         </FormItem>
         <FormItem>
             <Button type="primary" @click="handleSubmit('formData')">提交</Button>
@@ -60,6 +61,7 @@ export default {
   },
   data () {
     return {
+      MP3List: [],
       formData: {
         analysis: '',
         score: 2,

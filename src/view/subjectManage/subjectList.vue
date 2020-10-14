@@ -31,7 +31,8 @@ export default {
           title: '解析',
           key: 'analysis',
           width: 400,
-          align: 'center'
+          align: 'center',
+          render: (h, params) => this.renderOptions2(h, params)
         },
         {
           title: '试题类型',
@@ -124,6 +125,28 @@ export default {
         }
       })
       console.log(item.name)
+    },
+    renderOptions2 (h, params) {
+      let arr = params.row.groupColor || ['张老师的录音解析.mp3', '刘老师的录音解析.mp3']
+      return h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column'
+          }
+        },
+        arr.map((item, inde) => {
+          return h('div', {
+            style: {
+              borderRadius: '50%',
+              marginRight: '10px'
+            }
+          }, `${item} `)
+        })
+      )
     },
     renderOptions (h, params) {
       return h('div', [
