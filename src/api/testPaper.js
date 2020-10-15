@@ -2,7 +2,7 @@ import axios from '@/libs/api.request'
 
 export const getList = (info) => {
   return axios.request({
-    url: '/system/tCategoryExamination/list',
+    url: '/system/tExamination/list',
     data: info,
     method: 'post'
   })

@@ -10,11 +10,11 @@
         <FormItem label="试卷总分" prop="single_scores">
             <Input class="input-width" disabled  v-model="formData.total_scores" placeholder="试卷总分" />
         </FormItem>
-        <FormItem label="试卷类别" prop="category_id">
+        <!-- <FormItem label="试卷类别" prop="category_id">
             <Select v-model="formData.category_id" style="width:200px">
             <Option v-for="item in categoryList" :value="item.id" :key="item.value">{{ item.name }}</Option>
             </Select>
-        </FormItem>
+        </FormItem> -->
         <div class="select-btn">
           <Button type="primary" @click="selectQuestion()">选择题目</Button>
           <Button type="error" style="margin-left:20px" @click="delQuestion()" >批量删除</Button>
@@ -72,7 +72,6 @@ export default {
       isShowAddQuestion: false,
       formData: {
         'single_scores': 2,
-        'category_id': 0,
         'id': 0,
         'minute_limit': 1,
         'question_ids': [],
@@ -194,14 +193,14 @@ export default {
         this.selectedQstList = this.seletcedOnModalList
       }
     },
-    getCategoryList () {
-      getCategoryList(this.categoryListParams).then(data => {
-        if (data.data && data.data.data && data.data.data.records) {
-          this.categoryList = data.data.data.records
-          this.formData.category_id = (this.categoryList[0] && this.categoryList[0].id)
-        }
-      })
-    },
+    // getCategoryList () {
+    //   getCategoryList(this.categoryListParams).then(data => {
+    //     if (data.data && data.data.data && data.data.data.records) {
+    //       this.categoryList = data.data.data.records
+    //       this.formData.category_id = (this.categoryList[0] && this.categoryList[0].id)
+    //     }
+    //   })
+    // },
     onSelectionChange (selection) {
       console.log('当前选中：', selection)
       this.selectIds = selection
@@ -287,7 +286,7 @@ export default {
     }
   },
   async created () {
-    this.getCategoryList()
+    // this.getCategoryList()
     this.getList()
     if (this.$route.params.handleType === 'edit') {
       this.formData.id = this.$route.params.examination_id

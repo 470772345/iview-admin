@@ -5,7 +5,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getList, update, delQuestion } from '@/api/subject'
+import { getList, delQuestion, verify } from '@/api/audit'
 export default {
   name: 'subject-list',
   components: {
@@ -17,20 +17,21 @@ export default {
       dataRes: {},
       paramsObj: {
         page: 1,
-        size: 10
+        size: 10,
+        verify_status: 0
       },
       dataList: [],
       columns: [
         {
           title: '试题内容',
-          key: 'description',
+          key: 'question',
           width: 300,
           align: 'center',
-          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
+          render: (h, params) => h('span', params.row.question || '暂无试题内容')
         },
         {
           title: '选项',
-          key: 'analysis',
+          key: 'answer_vos',
           width: 400,
           align: 'center',
           render: (h, params) => this.renderOptions2(h, params)
@@ -38,14 +39,14 @@ export default {
         {
           title: '提交人',
           width: 90,
-          key: 'stuName',
+          key: 'user',
           align: 'center',
-          render: (h, params) => h('span', '张三李四')
+          render: (h, params) => h('span', params.row.user || '匿名')
         },
         {
           title: '解题音频',
           width: 90,
-          key: 'mp3',
+          key: 'url',
           align: 'center',
           render: (h, params) => this.renderMp3Ele(h, params)
         },
@@ -90,6 +91,14 @@ export default {
     },
     edit (row) {
       console.log('审核通过')
+      const tempObj = {
+        id: row.id,
+        verify_status: 1
+      }
+      verify(tempObj).then(res => {
+        this.$Message.success('操作成功')
+        this.getList()
+      })
       // 刷新列表
     },
     delQuestion (obj) {
@@ -98,12 +107,12 @@ export default {
         this.getList()
       })
     },
-    updateStatus (obj, status) {
-      obj.status = status
-      update(obj).then(res => {
-        this.$Message.success('操作成功')
-      })
-    },
+    // updateStatus (obj, status) {
+    //   obj.status = status
+    //   update(obj).then(res => {
+    //     this.$Message.success('操作成功')
+    //   })
+    // },
     async getList () {
       const { data } = await getList(this.paramsObj)
       if (data.data && data.data.records) {

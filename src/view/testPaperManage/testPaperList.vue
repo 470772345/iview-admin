@@ -1,7 +1,7 @@
 <template>
   <div class="test-paper-list">
    <Row>
-        <Col span="4" class="left-side">
+        <!-- <Col span="4" class="left-side">
         <div class="c-header" >
           <div>试卷分类</div>
           <div><Button type='primary' @click="showCategoryModal">新增</Button></div>
@@ -19,23 +19,18 @@
             </Poptip>
           </div>
         </div>
-        </Col>
-        <Col span="20" class="right-side" >
-        <div v-if="categoryList.length>0">
+        </Col> -->
+        <!-- <Col span="20" class="right-side" > -->
          <myTable  @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
-        </div>
-        <div class="no-tips" v-else>
-          <div>请先添加一个试卷分类~~</div>
-        </div>
-        </Col>
+        <!-- </Col> -->
     </Row>
-    <Modal
+    <!-- <Modal
         v-model="isShowAddCategory"
         :title="handleText"
         @on-ok="handleCategoryClick()"
         @on-cancel="cancel">
         <Input placeholder="请输入分类名称(最多8位)" :maxlength="maxLen" v-model="categoryParams.name" />
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 <script>
@@ -65,7 +60,6 @@ export default {
       dataRes: {},
       paramsObj: {
         name: '',
-        category_id: 0,
         page: 1,
         size: 10
       },
@@ -177,55 +171,55 @@ export default {
       TestPaperApi.delCategory(item).then(res => {
         if (res.data) {
           this.$Message.success('操作成功')
-          this.getCategoryList()
+          // this.getCategoryList()
         }
       })
     },
-    getCategoryList () {
-      TestPaperApi.getCategoryList(this.categoryListParams).then(data => {
-        if (data.data && data.data.data && data.data.data.records) {
-          this.categoryList = data.data.data.records
-          if (!this.curCategoryId) {
-            this.paramsObj.category_id = this.categoryList[0] && this.categoryList[0].id
-            this.curCategoryId = this.categoryList[0] && this.categoryList[0].id
-          }
-          this.getList(this.paramsObj)
-        }
-      })
-    },
-    handleCategoryClick () {
-      if (this.handleCType === 'add') {
-        if (!this.categoryParams.name) {
-          this.$Message.warning('分类名称不能空~')
-          return
-        }
-        TestPaperApi.addCategory(this.categoryParams).then(data => {
-          if (data.data && data.data.data) {
-            this.$Message.success('操作成功')
-            this.getCategoryList()
-          }
-        })
-      } else if (this.handleCType === 'edit') {
-        TestPaperApi.updateCategory(this.categoryParams).then(data => {
-          if (data.data && data.data.data) {
-            this.$Message.success('操作成功')
-            this.getCategoryList()
-          }
-        })
-      }
-    },
-    showCategoryModal (handleType, item) {
-      if (handleType === 'edit') {
-        this.categoryParams = JSON.parse(JSON.stringify(item))
-        this.handleCType = 'edit'
-        this.handleText = '编辑分类'
-      } else {
-        this.categoryParams.name = ''
-        this.handleCType = 'add'
-        this.handleText = '新增分类'
-      }
-      this.isShowAddCategory = true
-    },
+    // getCategoryList () {
+    //   TestPaperApi.getCategoryList(this.categoryListParams).then(data => {
+    //     if (data.data && data.data.data && data.data.data.records) {
+    //       this.categoryList = data.data.data.records
+    //       if (!this.curCategoryId) {
+    //         this.paramsObj.category_id = this.categoryList[0] && this.categoryList[0].id
+    //         this.curCategoryId = this.categoryList[0] && this.categoryList[0].id
+    //       }
+    //       this.getList(this.paramsObj)
+    //     }
+    //   })
+    // },
+    // handleCategoryClick () {
+    //   if (this.handleCType === 'add') {
+    //     if (!this.categoryParams.name) {
+    //       this.$Message.warning('分类名称不能空~')
+    //       return
+    //     }
+    //     TestPaperApi.addCategory(this.categoryParams).then(data => {
+    //       if (data.data && data.data.data) {
+    //         this.$Message.success('操作成功')
+    //         this.getCategoryList()
+    //       }
+    //     })
+    //   } else if (this.handleCType === 'edit') {
+    //     TestPaperApi.updateCategory(this.categoryParams).then(data => {
+    //       if (data.data && data.data.data) {
+    //         this.$Message.success('操作成功')
+    //         this.getCategoryList()
+    //       }
+    //     })
+    //   }
+    // },
+    // showCategoryModal (handleType, item) {
+    //   if (handleType === 'edit') {
+    //     this.categoryParams = JSON.parse(JSON.stringify(item))
+    //     this.handleCType = 'edit'
+    //     this.handleText = '编辑分类'
+    //   } else {
+    //     this.categoryParams.name = ''
+    //     this.handleCType = 'add'
+    //     this.handleText = '新增分类'
+    //   }
+    //   this.isShowAddCategory = true
+    // },
     selectClick (item) {
       // 切换选中样式
       this.curCategoryId = item.id
@@ -274,7 +268,8 @@ export default {
     }
   },
   created () {
-    this.getCategoryList(this.categoryListParams)
+    // this.getCategoryList(this.categoryListParams)
+    this.getList()
   }
 }
 </script>
