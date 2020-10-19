@@ -329,9 +329,11 @@ export default {
       if (val) {
         // console.log('默认值(处理前)',val);
         const result = []
+        debugger
         const files = val.split(/[,，]/)
         for (const f of files) {
           result.push({
+            name: '解题录音.mp3',
             url: f
           })
         }
@@ -395,9 +397,8 @@ export default {
       display: block;
       margin-right: 8px;
       margin-bottom: 8px;
+      max-height: 120px;
       padding: 2px;
-      width: 120px;
-      height: 60px;
       line-height: 60px;
       text-align: center;
       overflow: hidden;

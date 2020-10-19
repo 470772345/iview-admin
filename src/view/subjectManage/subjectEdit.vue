@@ -40,9 +40,12 @@
           </div>
           <div class="add-btn"> <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button></div>
         </FormItem>
-         <FormItem label="题目解析：" >
+         <FormItem label="音频解析：" >
             <!-- <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/> -->
-            <FileUpload ref="uploader3" v-model="MP3List" :isImage='false' :maxLength="5" :maxSize ='2048*5' />
+            <FileUpload accept='' ref="uploader3" v-model="MP3List" :isImage='false' :maxLength="5" :maxSize ='2048*5' showUploadList />
+        </FormItem>
+        <FormItem label="文字解析：" >
+            <Input v-model="formData.analysis_text" type="textarea" :rows="5" :maxlength="150" placeholder="请输入题目文字解析(最多150字符)"/>
         </FormItem>
         <FormItem>
             <Button type="primary" @click="handleSubmit('formData')">提交</Button>
@@ -61,9 +64,9 @@ export default {
   },
   data () {
     return {
-      MP3List: [],
+      MP3List: '',
       formData: {
-        analysis: '',
+        analysis: [],
         score: 2,
         url: '',
         description: '',
@@ -130,11 +133,23 @@ export default {
               if (self.formData.answers[i].type == 0) {
                 console.log('text===')
                 j++
+                debugger
                 self.formData.answers[i].text = self.$refs['uploader'] && self.$refs['uploader'][j] && self.$refs['uploader'][j].getData()
               }
             }
           }
           self.formData.url = self.$refs['uploader2'].getData()
+          debugger
+          let tempArr = self.$refs['uploader3'].getData().split(',')
+          if (tempArr.length > 0) {
+            self.formData.analysis = []
+          }
+          debugger
+          for (let i = 0; i < tempArr.length; i++) {
+            let tempObj = {}
+            tempObj.url = tempArr[i]
+            self.formData.analysis.push(tempObj)
+          }
           if (this.$route.params.handleType === 'edit') {
             update(this.formData).then(res => {
               console.log(res)
@@ -168,6 +183,22 @@ export default {
             for (let item of res.data.data.answers) {
               item.type = item.type + ''
             }
+          }
+          if (res.data.data.analysis && res.data.data.analysis.length > 0) {
+            let tempAr = []
+            for (let item of res.data.data.analysis) {
+              tempAr.push(item.url)
+            }
+            this.MP3List = tempAr.join(',')
+            // this.MP3List = [{
+            //   name: '11.mp3',
+            //   url: tempAr[0]
+            // }, {
+            //   name: '11.mp3',
+            //   url: tempAr[0]
+            // }]
+          } else {
+            res.data.data.analysis = []
           }
           this.formData = res.data.data
         }

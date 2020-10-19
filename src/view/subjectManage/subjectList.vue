@@ -28,11 +28,18 @@ export default {
           render: (h, params) => (<a onClick={() => this.edit(params.row)}>{params.row.description}</a>)
         },
         {
-          title: '解析',
+          title: '音频解析',
           key: 'analysis',
-          width: 400,
+          width: 200,
           align: 'center',
           render: (h, params) => this.renderOptions2(h, params)
+        },
+        {
+          title: '文本解析',
+          key: 'analysis_text',
+          width: 300,
+          align: 'center',
+          render: (h, params) => h('span', params.row.analysis_text || '暂无文本解析')
         },
         {
           title: '试题类型',

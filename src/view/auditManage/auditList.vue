@@ -5,7 +5,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getList, delQuestion, verify } from '@/api/audit'
+import { getList, delAudit, verify } from '@/api/audit'
 export default {
   name: 'subject-list',
   components: {
@@ -31,7 +31,7 @@ export default {
         },
         {
           title: '选项',
-          key: 'answer_vos',
+          key: 'answerVos',
           width: 400,
           align: 'center',
           render: (h, params) => this.renderOptions2(h, params)
@@ -53,13 +53,12 @@ export default {
         {
           title: '审核状态',
           width: 90,
-          key: 'subjectType',
+          key: 'verify_status',
           align: 'center',
-          render: (h, params) => h('span', params.row.type === 0 ? '已通过' : '已拒绝')
+          render: (h, params) => this.renderVerifyStatus(h, params.row.verify_status)
         },
         {
           title: '操作',
-          key: 'actor',
           align: 'center',
           render: (h, params) => this.renderOptions(h, params)
         }
@@ -89,11 +88,11 @@ export default {
         )
       }
     },
-    edit (row) {
+    edit (row, status) {
       console.log('审核通过')
       const tempObj = {
         id: row.id,
-        verify_status: 1
+        verify_status: status
       }
       verify(tempObj).then(res => {
         this.$Message.success('操作成功')
@@ -101,8 +100,8 @@ export default {
       })
       // 刷新列表
     },
-    delQuestion (obj) {
-      delQuestion(obj).then(res => {
+    delAudit (obj) {
+      delAudit(obj).then(res => {
         this.$Message.success('删除成功')
         this.getList()
       })
@@ -145,7 +144,6 @@ export default {
       console.log(item.name)
     },
     playMp3 (value) {
-      debugger
       let id = value.row.id
       let i = document.getElementById(id).nextElementSibling
       let au = document.getElementById(id)
@@ -154,11 +152,13 @@ export default {
         if (this.preMp3Ids !== id && this.preMp3Ids) {
           let preId = this.preMp3Ids
           let preAu = document.getElementById(preId)
-          let preEle = document.getElementById(preId).nextElementSibling
-          preEle.textContent = '播放'
-          preEle.style.cssText = 'color:#333333;font-style:normal;cursor:pointer'
-          preAu.dataset.flag = false
-          preAu.pause()
+          if (preAu.dataset.flag === 'false') {
+            let preEle = document.getElementById(preId).nextElementSibling
+            preEle.textContent = '播放'
+            preAu.dataset.flag = true
+            preEle.style.cssText = 'color:#333333;font-style:normal;cursor:pointer'
+            preAu.pause()
+          }
         }
         this.preMp3Ids = id
         au.play()
@@ -256,10 +256,24 @@ export default {
           },
           on: {
             click: () => {
-              this.edit(params.row)
+              this.edit(params.row, 1)
             }
           }
         }, '审核通过'),
+        h('Button', {
+          props: {
+            type: 'warning',
+            size: 'small'
+          },
+          style: {
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.edit(params.row, 2)
+            }
+          }
+        }, '不通过'),
         h('Poptip', {
           props: {
             confirm: true,
@@ -268,7 +282,7 @@ export default {
           },
           on: {
             'on-ok': () => {
-              this.delQuestion(params.row)
+              this.delAudit(params.row)
             }
           }
         }, [h('Button', {
@@ -279,8 +293,19 @@ export default {
           style: {
             marginRight: '5px'
           }
-        }, '退回')])
+        }, '删除')])
       ])
+    },
+    renderVerifyStatus (h, status) {
+      if (status === 0) {
+        return h('span', {}, '待审核')
+      } else if (status === 1) {
+        return h('span', {style: {color: 'green'}}, '已通过')
+      } else {
+        return h('span', {
+          style: {'color': '#ed5a36'}
+        }, '不通过')
+      }
     }
   },
   created () {

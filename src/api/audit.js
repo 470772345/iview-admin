@@ -16,9 +16,9 @@ export const verify = (info) => {
   })
 }
 
-export const delQuestion = (info) => {
+export const delAudit = (info) => {
   return axios.request({
-    url: '/system/tQuestion/delete',
+    url: '/system/tAnalysis/delete',
     data: info,
     method: 'post'
   })
