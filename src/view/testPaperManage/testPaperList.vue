@@ -125,7 +125,7 @@ export default {
       if (handleType === 'add') {
         this.$router.push({
           name: 'testPaperEdit',
-          params: {
+          query: {
             handleType: 'add'
           }
         }
@@ -135,7 +135,7 @@ export default {
     edit (row) {
       this.$router.push({
         name: 'testPaperEdit',
-        params: {
+        query: {
           handleType: 'edit',
           examination_id: row.id
         }

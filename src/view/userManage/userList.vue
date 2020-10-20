@@ -89,7 +89,7 @@ export default {
       if (handleType === 'add') {
         this.$router.push({
           name: 'userEdit',
-          params: {
+          query: {
             handleType: 'add'
           }
         }
@@ -99,7 +99,7 @@ export default {
     edit (row) {
       this.$router.push({
         name: 'userEdit',
-        params: {
+        query: {
           handleType: 'edit',
           userObj: row
         }

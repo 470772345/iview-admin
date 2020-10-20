@@ -53,7 +53,7 @@ export default {
       seletcedOnModalList: [],
       // 获取试卷内的题目列表
       quesParams: {
-        examination_id: this.$route.params.examination_id,
+        examination_id: this.$route.query.examination_id,
         show: true,
         page: 1,
         size: 1000
@@ -253,7 +253,7 @@ export default {
           this.formData.total_scores = this.formData.total_ques * this.formData.single_scores
           this.formData.question_ids = tempArr
           // 判断是否编辑
-          if (this.$route.params.handleType === 'edit') {
+          if (this.$route.query.handleType === 'edit') {
             update(this.formData).then(res => {
               if (res) {
                 this.$Message.success('操作成功!')
@@ -288,10 +288,10 @@ export default {
   async created () {
     // this.getCategoryList()
     this.getList()
-    if (this.$route.params.handleType === 'edit') {
-      this.formData.id = this.$route.params.examination_id
+    if (this.$route.query.handleType === 'edit') {
+      this.formData.id = this.$route.query.examination_id
       let params = {
-        examination_id: this.$route.params.examination_id,
+        examination_id: this.$route.query.examination_id,
         show: true,
         page: 1,
         size: 1

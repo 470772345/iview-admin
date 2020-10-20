@@ -133,24 +133,21 @@ export default {
               if (self.formData.answers[i].type == 0) {
                 console.log('text===')
                 j++
-                debugger
                 self.formData.answers[i].text = self.$refs['uploader'] && self.$refs['uploader'][j] && self.$refs['uploader'][j].getData()
               }
             }
           }
           self.formData.url = self.$refs['uploader2'].getData()
-          debugger
-          let tempArr = self.$refs['uploader3'].getData().split(',')
+          let tempArr = (self.$refs['uploader3'].getData().length > 0 && self.$refs['uploader3'].getData().split(',')) || []
           if (tempArr.length > 0) {
             self.formData.analysis = []
           }
-          debugger
           for (let i = 0; i < tempArr.length; i++) {
             let tempObj = {}
             tempObj.url = tempArr[i]
             self.formData.analysis.push(tempObj)
           }
-          if (this.$route.params.handleType === 'edit') {
+          if (this.$route.query.handleType === 'edit') {
             update(this.formData).then(res => {
               console.log(res)
               this.$Message.success('操作成功!')
@@ -172,10 +169,10 @@ export default {
     }
   },
   created () {
-    if (this.$route.params.handleType === 'edit') {
-      this.formData.id = this.$route.params.question_id
+    if (this.$route.query.handleType === 'edit') {
+      this.formData.id = this.$route.query.question_id
       let quesObj = {
-        question_id: this.$route.params.question_id
+        question_id: this.$route.query.question_id
       }
       getQueDetail(quesObj).then(res => {
         if (res.data && res.data && res.data.data) {

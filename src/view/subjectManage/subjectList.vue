@@ -73,7 +73,7 @@ export default {
       if (handleType === 'add') {
         this.$router.push({
           name: 'subjectEdit',
-          params: {
+          query: {
             handleType: 'add'
           }
         }
@@ -81,9 +81,10 @@ export default {
       }
     },
     edit (row) {
+      // query 传参防止，刷新参数丢失
       this.$router.push({
         name: 'subjectEdit',
-        params: {
+        query: {
           handleType: 'edit',
           question_id: row.id
         }

@@ -91,7 +91,7 @@ export default {
     handleSubmit (name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          if (this.$route.params.handleType === 'add') {
+          if (this.$route.query.handleType === 'add') {
             User.addUser(this.formData).then(res => {
               if (res.data) {
                 this.$router.go(-1)
@@ -122,9 +122,9 @@ export default {
     }
   },
   created () {
-    if (this.$route.params.handleType !== 'add') {
+    if (this.$route.query.handleType !== 'add') {
       // 编辑接口
-      this.getUserDetail(this.$route.params.userObj)
+      this.getUserDetail(this.$route.query.userObj)
     }
   }
 }
