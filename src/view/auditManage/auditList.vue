@@ -1,6 +1,6 @@
 <template>
   <div class="subject-list">
-      <myTable @handleSearch="handleSearch" :enableAdd='false' :searchable='false' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
+      <myTable @handleSearch="handleSearch" :enableAdd='false' :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
   </div>
 </template>
 <script>
@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     handleSearch (searchVal) {
-      this.paramsObj.name = searchVal
+      this.paramsObj.question = searchVal
       this.paramsObj.page = 1
       this.getList()
     },
@@ -193,8 +193,8 @@ export default {
             width: '100px'
           },
           attrs: {
-            // src: 'http://ai.foxcall.cn' + params.row.recordUrl,
-            src: 'http://120.77.211.97:80/common/uploadFile/20201014/91e21b7318c44d339e59442ee32df6a9.mp3',
+            src: params.row.url,
+            // src: 'http://120.77.211.97:80/common/uploadFile/20201014/91e21b7318c44d339e59442ee32df6a9.mp3',
             id: params.row.id,
             'data-flag': true
           }
@@ -224,7 +224,8 @@ export default {
       ])
     },
     renderOptions2 (h, params) {
-      let arr = params.row.groupColor || ['red', 'yellow']
+      debugger
+      let arr = params.row.answer_vos || ['red', 'yellow']
       return h(
         'div',
         {
@@ -240,7 +241,7 @@ export default {
               borderRadius: '50%',
               marginRight: '10px'
             }
-          }, `A选项${item}  `)
+          }, `${item.code}选项${item.text} `)
         })
       )
     },
