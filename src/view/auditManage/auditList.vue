@@ -147,6 +147,11 @@ export default {
       let id = value.row.id
       let i = document.getElementById(id).nextElementSibling
       let au = document.getElementById(id)
+      console.log(au.src, 'url')
+      if ((au.src.indexOf('mp3') === -1) && (au.src.indexOf('MP3') === -1)) {
+        this.$Message.warning('音频格式不正确,请重新上传~')
+        throw TypeError('音频格式不正确')
+      }
       let endTime = au.duration
       if (au.dataset.flag === 'true') {
         if (this.preMp3Ids !== id && this.preMp3Ids) {
@@ -224,24 +229,39 @@ export default {
       ])
     },
     renderOptions2 (h, params) {
-      debugger
-      let arr = params.row.answer_vos || ['red', 'yellow']
+      let arr = params.row.answer_vos || []
       return h(
         'div',
         {
           style: {
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            flexDirection: 'column'
           }
         },
         arr.map((item, inde) => {
-          return h('div', {
-            style: {
-              borderRadius: '50%',
-              marginRight: '10px'
-            }
-          }, `${item.code}选项${item.text} `)
+          if (item.type == 2) {
+            return h('div', {
+              style: {
+                marginRight: '5px',
+                marginTop: '5px'
+              }
+            }, `${item.code}: ${item.text} `)
+          } else {
+            return h('img', {
+              attrs: {
+                src: item.text
+              },
+              style: {
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '160px',
+                marginTop: '5px',
+                marginRight: '5px'
+              }
+            }, ``)
+          }
         })
       )
     },

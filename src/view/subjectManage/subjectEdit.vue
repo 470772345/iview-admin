@@ -123,6 +123,10 @@ export default {
       }
       this.formData.answers.push(obj)
     },
+    getCode (index) {
+      const map = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+      return map[index]
+    },
     handleSubmit (name) {
       const self = this
       this.$refs[name].validate((valid) => {
@@ -130,6 +134,7 @@ export default {
           if (this.formData.answers) {
             let j = -1 // 因为self.$refs有多个,有时是文本,所以下标不能共用
             for (let i = 0; i < this.formData.answers.length; i++) {
+              this.formData.answers[i].code = this.getCode(i)
               if (self.formData.answers[i].type == 0) {
                 console.log('text===')
                 j++

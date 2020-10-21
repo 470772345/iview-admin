@@ -135,7 +135,12 @@ export default {
       console.log(item.name)
     },
     renderOptions2 (h, params) {
-      let arr = params.row.groupColor || ['张老师的录音解析.mp3', '刘老师的录音解析.mp3']
+      let arr = params.row.analysis
+      if (params.row.analysis && params.row.analysis.length > 0) {
+        for (let item of params.row.analysis) {
+          item.text = '解题录音.mp3'
+        }
+      }
       return h(
         'div',
         {
@@ -152,7 +157,7 @@ export default {
               borderRadius: '50%',
               marginRight: '10px'
             }
-          }, `${item} `)
+          }, `${item.text} `)
         })
       )
     },

@@ -329,7 +329,6 @@ export default {
       if (val) {
         // console.log('默认值(处理前)',val);
         const result = []
-        debugger
         const files = val.split(/[,，]/)
         for (const f of files) {
           result.push({
