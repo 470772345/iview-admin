@@ -32,27 +32,27 @@ export default {
         {
           title: '选项',
           key: 'answerVos',
-          width: 400,
+          width: 330,
           align: 'center',
           render: (h, params) => this.renderOptions2(h, params)
         },
         {
           title: '提交人',
-          width: 90,
+          width: 80,
           key: 'user',
           align: 'center',
           render: (h, params) => h('span', params.row.user || '匿名')
         },
         {
           title: '解题音频',
-          width: 90,
+          width: 80,
           key: 'url',
           align: 'center',
           render: (h, params) => this.renderMp3Ele(h, params)
         },
         {
           title: '审核状态',
-          width: 90,
+          width: 80,
           key: 'verify_status',
           align: 'center',
           render: (h, params) => this.renderVerifyStatus(h, params.row.verify_status)

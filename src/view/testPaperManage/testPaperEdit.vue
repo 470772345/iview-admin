@@ -33,7 +33,7 @@
         title="选择题目"
         @on-ok="commitSelect()"
         @on-cancel="cancel">
-        <myTable :searchable='true'  @handlePager="handlePager" :dataRes="dataRes"
+        <myTable :searchable='true'  @handleSearch="handleSearch"  @handlePager="handlePager" :dataRes="dataRes"
         :columns='columns' :value='quesDataList' :border='true' :enableAdd='false'
         @on-selection-change="onSelection2" ></myTable>
     </Modal>
@@ -41,7 +41,7 @@
 </template>
 <script>
 import myTable from '_c/tables'
-import { getCategoryList, add, getDetail, update, getQuestions } from '@/api/testPaper'
+import { add, getDetail, update, getQuestions } from '@/api/testPaper'
 import { getList } from '@/api/subject'
 export default {
   name: 'user-edit',
@@ -270,6 +270,11 @@ export default {
           }
         }
       })
+    },
+    handleSearch (searchVal) {
+      this.quesParamsObj.name = searchVal
+      this.quesParamsObj.page = 1
+      this.getList()
     },
     async getList () {
       const { data } = await getList(this.quesParamsObj)

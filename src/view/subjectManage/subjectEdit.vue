@@ -127,17 +127,31 @@ export default {
       const map = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
       return map[index]
     },
+    checkLastTrue () {
+      let tempArr = []
+      for (let i = 0; i < this.formData.answers.length; i++) {
+        tempArr.push(this.formData.answers[i].is_true)
+      }
+      return tempArr.indexOf(true)
+    },
     handleSubmit (name) {
       const self = this
       this.$refs[name].validate((valid) => {
         if (valid) {
           if (this.formData.answers) {
+            if (this.checkLastTrue() == -1) {
+              this.$Message.warning('请设置至少一个正确答案~')
+              return
+            }
             let j = -1 // 因为self.$refs有多个,有时是文本,所以下标不能共用
             for (let i = 0; i < this.formData.answers.length; i++) {
               this.formData.answers[i].code = this.getCode(i)
-              if (self.formData.answers[i].type == 0) {
+              this.formData.answers[i].sort = i + 1
+              if (self.formData.answers[i].type == 0) { // type有时候是字符串
                 console.log('text===')
                 j++
+                debugger
+                console.log(self.$refs['uploader'][j])
                 self.formData.answers[i].text = self.$refs['uploader'] && self.$refs['uploader'][j] && self.$refs['uploader'][j].getData()
               }
             }
