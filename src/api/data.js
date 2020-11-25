@@ -39,30 +39,17 @@ export const delUser = (info) => {
   })
 }
 
-export const getTableData = () => {
+export const addComments = info => {
   return axios.request({
-    url: 'get_table_data',
-    method: 'get'
-  })
-}
-
-export const getDragList = () => {
-  return axios.request({
-    url: 'get_drag_list',
-    method: 'get'
-  })
-}
-
-export const errorReq = () => {
-  return axios.request({
-    url: 'error_url',
+    url: '/system/tComments/add',
+    data: info,
     method: 'post'
   })
 }
 
-export const saveErrorLogger = info => {
+export const getComments = info => {
   return axios.request({
-    url: 'save_error_logger',
+    url: '/system/tComments/list',
     data: info,
     method: 'post'
   })

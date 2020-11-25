@@ -161,6 +161,26 @@ export default [
     ]
   },
   {
+    path: '/settingMange',
+    name: 'settingMange',
+    meta: {
+      icon: 'md-card',
+      title: '评语设置'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'setting',
+        name: 'setting',
+        meta: {
+          icon: 'md-card',
+          title: '评语设置'
+        },
+        component: () => import('@/view/settingMange/setting.vue')
+      }
+    ]
+  },
+  {
     path: '/401',
     name: 'error_401',
     meta: {

@@ -267,11 +267,19 @@ export default {
       this.filesLength--
     },
     handleBeforeUpload (files) {
+      debugger
       this.filesLength++
-      const check = this.filesLength <= this.maxLength
+      let check = this.filesLength <= this.maxLength
       if (!check) {
         this.$Notice.warning({
           title: `文件数量最多为 ${this.maxLength}`
+        })
+        this.filesLength--
+      }
+      if (!this.acceptType.includes(files.type)) {
+        check = false
+        this.$Notice.warning({
+          title: `文件格式不对~`
         })
         this.filesLength--
       }

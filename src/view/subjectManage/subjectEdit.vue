@@ -32,7 +32,7 @@
              </div>
             <Input v-model="item.text" v-if="item.type == '2'" type="textarea" :rows="2"  placeholder="请输入选项内容"/>
             <div class="img-upload" v-if="item.type == '0'" >
-             <FileUpload ref="uploader" v-model="item.text" isImage :maxLength="1" />
+             <FileUpload accept="image/jpg,image/jpeg,image/png,image/gif,image/bmp" ref="uploader" v-model="item.text" isImage :maxLength="1" />
             </div>
            <div class="del-btn">
             <Button icon="md-close" type="error" size="small" v-if="index>0" @click="delAnwserItem(index)">删除</Button>
@@ -42,7 +42,8 @@
         </FormItem>
          <FormItem label="音频解析：" >
             <!-- <Input v-model="formData.analysis" type="textarea" :rows="2" placeholder="请输入题目解析"/> -->
-            <FileUpload accept='' ref="uploader3" v-model="MP3List" :isImage='false' :maxLength="5" :maxSize ='2048*5' showUploadList />
+            <FileUpload accept='audio/mp3' ref="uploader3" v-model="MP3List" :isImage='false' :maxLength="5" :maxSize ='2048*5' showUploadList />
+            <span>(请上传mp3格式~ 此处只显示老师的录音)</span>
         </FormItem>
         <FormItem label="文字解析：" >
             <Input v-model="formData.analysis_text" type="textarea" :rows="5" :maxlength="150" placeholder="请输入题目文字解析(最多150字符)"/>
