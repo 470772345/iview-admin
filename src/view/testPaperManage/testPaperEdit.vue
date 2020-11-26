@@ -47,6 +47,7 @@ export default {
   name: 'user-edit',
   data () {
     return {
+      type: '0',
       selectIds: [],
       dataRes: {},
       maxLen: 20,
@@ -252,6 +253,7 @@ export default {
           this.formData.total_ques = this.selectedQstList.length
           this.formData.total_scores = this.formData.total_ques * this.formData.single_scores
           this.formData.question_ids = tempArr
+          this.formData.type = this.type
           // 判断是否编辑
           if (this.$route.query.handleType === 'edit') {
             update(this.formData).then(res => {
@@ -293,9 +295,11 @@ export default {
   async created () {
     // this.getCategoryList()
     this.getList()
+    this.type = this.$route.query.type
     if (this.$route.query.handleType === 'edit') {
       this.formData.id = this.$route.query.examination_id
       let params = {
+        type: this.type,
         examination_id: this.$route.query.examination_id,
         show: true,
         page: 1,

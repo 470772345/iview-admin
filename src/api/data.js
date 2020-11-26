@@ -39,17 +39,16 @@ export const delUser = (info) => {
   })
 }
 
-export const addComments = info => {
+export const errorReq = () => {
   return axios.request({
-    url: '/system/tComments/add',
-    data: info,
+    url: 'error_url',
     method: 'post'
   })
 }
 
-export const getComments = info => {
+export const saveErrorLogger = info => {
   return axios.request({
-    url: '/system/tComments/list',
+    url: 'save_error_logger',
     data: info,
     method: 'post'
   })

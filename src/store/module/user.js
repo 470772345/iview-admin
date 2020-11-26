@@ -33,7 +33,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, {name, password}) {
+    handleLogin ({ commit }, { name, password }) {
       name = name.trim()
       const obj = {}
       obj.name = name

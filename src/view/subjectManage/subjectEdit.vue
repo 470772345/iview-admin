@@ -109,7 +109,7 @@ export default {
       this.formData.answers.splice(index, 1)
     },
     addAnwserItem () {
-      if (this.formData.answers >= 8) {
+      if (this.formData.answers.length >= 8) {
         this.$Message.warning('最多设置8个题目选项~')
         return
       }

@@ -21,6 +21,16 @@
         </div>
         </Col> -->
         <!-- <Col span="20" class="right-side" > -->
+       <Menu mode="horizontal" theme="light" active-name="1" @on-select="onselect">
+          <MenuItem name="1">
+              <Icon type="ios-paper" />
+              测试模式
+          </MenuItem>
+          <MenuItem name="2">
+              <Icon type="ios-people" />
+              学习模式
+          </MenuItem>
+        </Menu>
          <myTable  @handleSearch="handleSearch" :searchable='true' :dataRes="dataRes" @handlePager="handlePager" :columns='columns' :value='dataList' :border='true' @addClick='addClick'></myTable>
         <!-- </Col> -->
     </Row>
@@ -46,19 +56,20 @@ export default {
       maxLen: 8,
       curCategoryId: 0,
       categoryList: [],
-      categoryListParams: {
-        'name': '',
-        'page': 1,
-        'size': 20
-      },
-      categoryParams: {
-        'id': 0,
-        'name': '',
-        'sort': '',
-        'url': ''
-      },
+      // categoryListParams: {
+      //   'name': '',
+      //   'page': 1,
+      //   'size': 20
+      // },
+      // categoryParams: {
+      //   'id': 0,
+      //   'name': '',
+      //   'sort': '',
+      //   'url': ''
+      // },
       dataRes: {},
       paramsObj: {
+        type: 0,
         name: '',
         page: 1,
         size: 10
@@ -110,6 +121,10 @@ export default {
     Pager
   },
   methods: {
+    onselect (val) {
+      val === '1' ? this.paramsObj.type = '0' : this.paramsObj.type = '1'
+      this.getList(this.paramsObj)
+    },
     handleSearch (searchVal) {
       this.paramsObj.name = searchVal
       this.paramsObj.page = 1
@@ -126,7 +141,8 @@ export default {
         this.$router.push({
           name: 'testPaperEdit',
           query: {
-            handleType: 'add'
+            handleType: 'add',
+            type: this.paramsObj.type
           }
         }
         )
