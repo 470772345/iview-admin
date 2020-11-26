@@ -2,7 +2,7 @@
   <div class="subject-list">
     <Form ref="formData" :model="formData"  :label-width="95" style="width:90%;">
          <FormItem  style="padding:10px">
-          <div class="anwser-item" v-for="(item,index) in settingArr" :key="item.title">
+          <div class="anwser-item" v-for="(item,index) in settingArr" :key="index">
               <div style="font-size:20px;margin:5px 0" >分数阶段{{index+1}}</div>
               <div>
                 <label style="margin-right:10px">开始分数:</label>
@@ -18,7 +18,7 @@
           <div class="btn">
             <Button icon="md-add" type="primary" size="small" @click="addAnwserItem" >添加</Button>
             <Button icon="md-add" type="success" size="small" style="margin-left:10px" @click="saveSetting" >保存</Button>
-            </div>
+          </div>
         </FormItem>
         </Form>
   </div>
@@ -67,14 +67,19 @@ export default {
         this.$Message.warning('最多设置8个~')
         return
       }
+      let end = 1
+      if (this.settingArr.length > 0) {
+        end = this.settingArr[this.settingArr.length - 1].to_score + 1
+      }
       let obj = {
         comments: '非常给力,继续努力哦',
         create_time: '',
         create_user: 0,
-        from_score: 10,
+        from_score: end,
         id: 0,
-        to_score: 20
+        to_score: end + 1
       }
+
       this.settingArr.push(obj)
     },
     delAnwserItem (index) {
@@ -82,7 +87,8 @@ export default {
     },
     getComments (searchVal) {
       getComments().then(res => {
-        this.settingArr = res
+        debugger
+        this.settingArr = res && res.data && res.data.data
       })
     }
   },
